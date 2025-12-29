@@ -1,0 +1,3187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Virada Salvador 2026 — Inteligência Hive</title>
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#06090f;
+      --panel:#0c1017;
+      --panel2:#0b111a;
+      --border:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.58);
+
+      --good:#2ee59d;
+      --warn:#ffcc66;
+      --bad:#ff5c7a;
+
+      --blue:#57a4ff;
+      --pink:#ff5c7a;
+      --green:#28e2a5;
+      --amber:#ffcc66;
+
+      --glow1:rgba(93,156,255,.14);
+      --glow2:rgba(134,109,255,.14);
+      --shadow:0 22px 60px rgba(0,0,0,.55);
+      --radius:18px;
+      --radius2:14px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 7% 0%, var(--glow1), transparent 70%),
+        radial-gradient(900px 600px at 93% 0%, var(--glow2), transparent 70%),
+        var(--bg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+      overflow-x:hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .header{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter: blur(12px);
+      background:rgba(10,14,18,.62);
+      border-bottom:1px solid var(--border);
+    }
+    .header-inner{
+      max-width:1880px;
+      margin:0 auto;
+      padding:18px 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+      font-weight:700;
+    }
+    .brand .sub{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .header-right{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      justify-content:flex-end;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .pill{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      padding:7px 10px;
+      border-radius:999px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--good);
+      box-shadow:0 0 12px rgba(46,229,157,.35);
+    }
+
+    /* ===== LAYOUT ===== */
+    .container{
+      max-width:1880px;
+      margin:0 auto;
+      padding:22px 24px 28px;
+      display:grid;
+      gap:18px;
+    }
+
+    /* ===== CARD BASE ===== */
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(900px 420px at 10% -10%, rgba(87,164,255,.10), transparent 60%),
+        radial-gradient(900px 420px at 90% 0%, rgba(255,92,122,.08), transparent 62%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .card > *{position:relative}
+    .pad{padding:16px 18px}
+
+    .card-title{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      margin-bottom:10px;
+    }
+    .card-title h2, .card-title h3{
+      margin:0;
+      font-size:14px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .card-title .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .chip .mini-dot{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--amber);
+      box-shadow:0 0 12px rgba(255,204,102,.25);
+    }
+    .chip.good .mini-dot{ background:var(--good); box-shadow:0 0 12px rgba(46,229,157,.28); }
+    .chip.rank .mini-dot{ background:var(--green); box-shadow:0 0 12px rgba(40,226,165,.28); }
+    /* Title actions / selects */
+    .title-actions{ display:flex; align-items:center; gap:10px; }
+    .select-wrap{ position:relative; display:inline-flex; align-items:center; }
+    .select{
+      appearance:none;
+      -webkit-appearance:none;
+      -moz-appearance:none;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      color:var(--text);
+      border-radius:999px;
+      padding:7px 34px 7px 12px;
+      font-size:12px;
+      letter-spacing:.2px;
+      outline:none;
+      cursor:pointer;
+    }
+    .select:focus{ border-color:rgba(87,164,255,.55); box-shadow:0 0 0 3px rgba(87,164,255,.12); }
+    .select option{ background:#0b0d12; color:var(--text); }
+    .select-wrap:after{
+      content:"▾";
+      position:absolute;
+      right:12px;
+      color:var(--muted);
+      pointer-events:none;
+      font-size:12px;
+      transform:translateY(-1px);
+    }
+
+    .chip.warn .mini-dot{ background:var(--warn); }
+    .chip.bad .mini-dot{ background:var(--bad); }
+
+    /* ===== KPI ROW (NATAL STYLE) ===== */
+    .kpi-row{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(220px, 1fr));
+      gap:14px;
+    }
+    .kpi{
+      padding:16px 18px 14px;
+      min-height:116px;
+    }
+    .kpi .k-top{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:10px;
+    }
+    .kpi .k-label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.2px;
+      margin-bottom:2px;
+    }
+    .kpi .k-value{
+      font-size:32px;
+      font-weight:900;
+      letter-spacing:.2px;
+      margin-top:3px;
+    }
+    .kpi .k-sub{
+      margin-top:2px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .kpi .k-status{
+      display:flex; align-items:center; gap:8px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .kpi .k-status .sig{
+      width:10px; height:10px; border-radius:50%;
+      background:var(--good);
+      box-shadow:0 0 14px rgba(46,229,157,.28);
+    }
+    .kpi .spark{
+      margin-top:10px;
+      height:34px;
+      width:100%;
+    }
+    .kpi .spark canvas{
+      width:100% !important;
+      height:34px !important;
+    }
+    .kpi.blue .k-status .sig{ background:var(--blue); box-shadow:0 0 14px rgba(87,164,255,.25); }
+    .kpi.pink .k-status .sig{ background:var(--pink); box-shadow:0 0 14px rgba(255,92,122,.25); }
+    .kpi.green .k-status .sig{ background:var(--green); box-shadow:0 0 14px rgba(40,226,165,.25); }
+    .kpi.amber .k-status .sig{ background:var(--amber); box-shadow:0 0 14px rgba(255,204,102,.18); }
+
+    /* ===== ROW: (3/4 bands + 1/4 alerts) ===== */
+    .row-3-1{
+      display:grid;
+      grid-template-columns:3fr 1fr;
+      gap:14px;
+      align-items:stretch;
+    }
+    .clickable{
+      cursor:pointer;
+      transition:transform .12s ease, filter .12s ease;
+    }
+    .clickable:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.04);
+    }
+
+    /* ===== CHART WRAPS ===== */
+    .chart-wrap{ position:relative; }
+
+    /* Faz o gráfico ocupar toda a altura do card (remove “vazio” embaixo) */
+    #openBandsModal{ display:flex; flex-direction:column; }
+    #openBandsModal .chart-wrap{ flex:1 1 auto; }
+
+    .chart-compact{ height:100%; min-height:240px; }
+    .chart-compact canvas{ width:100% !important; height:100% !important; }
+
+    .chart-tall{ height:320px; }
+    .chart-tall canvas{ width:100% !important; height:320px !important; }
+    .chart-mini{ height:190px; }
+    .chart-mini canvas{ width:100% !important; height:190px !important; }
+
+    /* ===== ALERTS CARD (MATCH PRINT) ===== */
+    .alerts{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .alerts .section-h{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:2px;
+    }
+    .alerts .section-h h3{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.2px;
+      font-weight:800;
+      color:rgba(255,255,255,.84);
+    }
+    .alerts .badge-rt{
+      display:flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,204,102,.22);
+      background:rgba(255,204,102,.06);
+      color:rgba(255,204,102,.92);
+      font-size:11px;
+      white-space:nowrap;
+    }
+    .alerts .alert-item{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.22);
+      border-radius:14px;
+      padding:12px 12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .alerts .alert-item .txt{
+      display:flex; flex-direction:column; gap:4px;
+      min-width:0;
+    }
+    .alerts .alert-item .msg{
+      font-size:12px;
+      color:rgba(255,255,255,.86);
+      line-height:1.25;
+    }
+    .alerts .alert-item .meta{
+      font-size:11px;
+      color:rgba(255,255,255,.55);
+    }
+    .alerts .pill-state{
+      font-size:11px;
+      font-weight:900;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      white-space:nowrap;
+      align-self:center;
+    }
+    .alerts .pill-state.warn{ color:var(--warn); border-color:rgba(255,204,102,.25); background:rgba(255,204,102,.06); }
+    .alerts .pill-state.bad{ color:var(--bad); border-color:rgba(255,92,122,.22); background:rgba(255,92,122,.06); }
+
+    .alerts .divider{
+      height:1px;
+      background:rgba(255,255,255,.07);
+      margin:6px 0 0;
+    }
+
+    .topcams{
+      margin-top:10px;
+    }
+    .topcams .top-h{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:8px;
+      color:rgba(255,255,255,.78);
+      font-weight:800;
+      font-size:12px;
+      letter-spacing:.2px;
+    }
+    .table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      color:rgba(255,255,255,.86);
+    }
+    .table th{
+      text-align:left;
+      font-size:11px;
+      color:rgba(255,255,255,.55);
+      font-weight:800;
+      padding:9px 8px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .table td{
+      padding:10px 8px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      vertical-align:middle;
+    }
+    .mono{ font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1; }
+    .in{ color:var(--good); font-weight:900; }
+    .out{ color:var(--bad); font-weight:900; }
+    .local{ color:rgba(255,255,255,.60); font-size:11px; }
+
+    /* ===== RANKING CARD ===== */
+    .ranking-sub{
+      font-size:12px; color:var(--muted); margin-top:4px;
+    }
+    .rank-title{
+      text-align:center;
+      padding-top:4px;
+    }
+    .rank-title h2{
+      margin:0;
+      font-size:26px;
+      letter-spacing:.2px;
+      font-weight:900;
+    }
+    .rank-title .ranking-sub{
+      margin:6px 0 0;
+      font-size:14px;
+      color:rgba(255,255,255,.75);
+      font-weight:700;
+    }
+
+    /* ===== 5 NIGHT CHARTS LINE (TELÃO) ===== */
+    .night-row{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(260px, 1fr));
+      gap:14px;
+      align-items:stretch;
+    }
+    .night-card .night-h{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:8px;
+    }
+    .night-card .night-h h3{
+      margin:0;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.2px;
+      color:rgba(255,255,255,.88);
+    }
+
+    /* ===== SMART + HEATMAP ===== */
+    .smart-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:14px;
+      align-items:stretch;
+    }
+    .smart-item{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:center;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.18);
+      margin-bottom:10px;
+      font-size:12px;
+      color:rgba(255,255,255,.82);
+    }
+    .smart-item .v{
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .heatmap{
+      height:240px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:
+        radial-gradient(180px 120px at 20% 30%, rgba(255,92,122,.35), transparent 65%),
+        radial-gradient(220px 140px at 55% 55%, rgba(255,204,102,.28), transparent 68%),
+        radial-gradient(200px 140px at 78% 35%, rgba(40,226,165,.28), transparent 68%),
+        radial-gradient(240px 160px at 60% 80%, rgba(87,164,255,.26), transparent 70%),
+        rgba(0,0,0,.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:rgba(255,255,255,.60);
+      font-size:12px;
+      letter-spacing:.2px;
+    }
+
+    /* ===== CAMERAS GRID ===== */
+    .cameras-grid{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(200px, 1fr));
+      gap:12px;
+    }
+    .cam{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.22);
+      border-radius:14px;
+      overflow:hidden;
+    }
+    .cam .snap{
+      height:88px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.12)),
+        radial-gradient(180px 90px at 35% 30%, rgba(87,164,255,.18), transparent 62%),
+        radial-gradient(180px 90px at 70% 60%, rgba(255,92,122,.14), transparent 62%);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      display:flex; align-items:flex-end; justify-content:space-between;
+      padding:10px 10px;
+    }
+    .cam .snap .camname{
+      font-size:17px;
+      font-weight:900;
+      color:rgba(255,255,255,.88);
+    }
+    .cam .snap .st{
+      font-size:11px;
+      font-weight:900;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.72);
+    }
+    .cam .snap .st.on{ color:var(--good); border-color:rgba(46,229,157,.25); background:rgba(46,229,157,.06); }
+    .cam .snap .st.off{ color:var(--bad); border-color:rgba(255,92,122,.22); background:rgba(255,92,122,.06); }
+
+    .cam .body{
+      padding:10px 10px 12px;
+      display:grid;
+      gap:6px;
+      font-size:15.5px;
+      color:rgba(255,255,255,.70);
+    }
+    .cam .body .row{
+      display:flex; justify-content:space-between; gap:10px;
+    }
+    .cam .body .row .n{
+      font-weight:900; color:rgba(255,255,255,.88);
+    }
+    .cam .body .btn{
+      margin-top:6px;
+      width:100%;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.82);
+      font-size:12px;
+      padding:10px 10px;
+      cursor:pointer;
+    }
+    .cam .body .btn:hover{ filter:brightness(1.08); }
+
+    /* ===== MODAL (OPAQUE PANEL) ===== */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:80;
+      background:rgba(0,0,0,.62);
+      padding:18px;
+    }
+    .modal.open{ display:flex; }
+    .modal-panel{
+      width:min(1180px, 96vw);
+      max-height:92vh;
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      box-shadow:0 30px 90px rgba(0,0,0,.75);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .modal-head{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    }
+    .modal-head h3{
+      margin:0;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .modal-close{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.86);
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
+    }
+    .modal-close:hover{ filter:brightness(1.1); }
+    .modal-body{
+      padding:16px;
+      overflow:auto;
+      background:var(--panel);
+    }
+
+
+    /* ========= MAPA DE CALOR INTERATIVO ========= */
+
+    #cardHeatmap .heatmap-wrap{
+      width:100%;
+      aspect-ratio: 2048 / 761;
+      height:auto;
+      min-height:unset;
+      overflow:hidden;
+
+      /* mesma “moldura” dos outros elementos do dash */
+      border:1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.18);
+    }
+
+    #heatSvg{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+
+
+
+    /* legenda das zonas */
+    .zones-legend{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap:10px;
+    }
+
+    .zone-item{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.18);
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    
+      cursor:pointer;
+    }
+    .zone-item:hover{ filter:brightness(1.08); border-color:rgba(255,255,255,0.16); }
+    .zone-item.active{ outline:1px solid rgba(255,204,102,0.35); box-shadow:0 0 0 1px rgba(255,204,102,0.12) inset; }
+    .zone-swatch{ width:10px; height:10px; border-radius:999px; border:1px solid rgba(255,255,255,0.18); background:rgba(255,255,255,0.12); margin-top:2px; }
+
+
+    .zone-badge{
+      min-width:52px;
+      height:28px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:.3px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.86);
+    }
+
+    .zone-meta{
+      font-size:11px;
+      color: rgba(255,255,255,0.72);
+      line-height:1.25;
+    }
+    .zone-meta .t{
+      font-size:12px;
+      font-weight:900;
+      color: rgba(255,255,255,0.88);
+      margin-bottom:2px;
+    }
+
+    @media (max-width:1650px){
+      .zones-legend{ grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+    }
+    @media (max-width:900px){
+      .zones-legend{ grid-template-columns: 1fr; }
+    }
+
+
+
+    /* polígonos */
+    .heat-poly{
+    stroke: rgba(255,255,255,0.22);
+    stroke-width: 3;
+    vector-effect: non-scaling-stroke;
+    cursor: pointer;
+    }
+    .heat-poly.active{ stroke: rgba(255,204,102,0.90); stroke-width:4.2; }
+
+
+    .heat-poly:hover{
+    stroke: rgba(255,255,255,0.60);
+    }
+
+    /* labels */
+    .heat-label{
+    font: 600 18px system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    fill: rgba(255,255,255,0.85);
+    paint-order: stroke;
+    stroke: rgba(0,0,0,0.55);
+    stroke-width: 4px;
+    pointer-events:none;
+    }
+
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width:1650px){
+      .kpi-row{ grid-template-columns:repeat(3, minmax(220px, 1fr)); }
+      .row-3-1{ grid-template-columns:1fr; }
+      .smart-grid{ grid-template-columns:1fr; }
+    }
+    @media (max-width:1200px){
+      .night-row{
+        grid-template-columns:repeat(5, 320px);
+        overflow-x:auto;
+        padding-bottom:6px;
+      }
+      .cameras-grid{ grid-template-columns:repeat(3, minmax(200px, 1fr)); }
+    }
+
+
+    
+    /* ===== SSP MODE: esconder blocos não usados ===== */
+    
+    
+    
+    #camerasSSP
+    {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <h1>Virada Salvador 2026 — SALTUR — Megan Inteligência Artificial - Hive Computer Vision</h1>
+        <div class="sub">Dashboard em tempo real · atualização automática</div>
+      </div>
+      <div class="header-right">
+        <div class="pill"><span class="dot"></span><span>Atualização OK</span></div>
+        <div class="pill">Âncora: <span class="mono" id="anchorTs">--</span></div>
+        <div class="pill">Atualizado: <span class="mono" id="clock">--:--:--</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- KPIs (Natal style with sparklines) -->
+    <div class="kpi-row">
+      <div class="card kpi blue">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Pessoas presentes agora</div>
+            <div class="k-value mono" id="k_now">--</div>
+            <div class="k-sub">Total de presentes no momento atual</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>AO VIVO</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_now"></canvas></div>
+      </div>
+
+      <div class="card kpi green">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Total de entradas hoje</div>
+            <div class="k-value mono" id="k_peak">--</div>
+            <div class="k-sub">Soma de público consolidado (noite atual)</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>HOJE</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_peak"></canvas></div>
+      </div>
+
+      <div class="card kpi">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Pico da noite</div>
+            <div class="k-value mono" id="k_total">--</div>
+            <div class="k-sub">Maior valor observado (noite atual)</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>MAX</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_total"></canvas></div>
+      </div>
+
+      <div class="card kpi amber">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Total de entradas acumuladas</div>
+            <div class="k-value mono" id="k_alerts">--</div>
+            <div class="k-sub">Soma de público consolidado (todas as noites)</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>TOTAL GERAL</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_alerts"></canvas></div>
+      </div>
+
+      <div class="card kpi pink">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Alertas ativos</div>
+            <div class="k-value" id="k_status">OK</div>
+            <div class="k-sub">Análise inteligente de todos os setores</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>ALERTA</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_status"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Row: 3/4 Bands (All Nights) + 1/4 Alertas Operacionais (print style). Both clickable to modal. -->
+    <div class="row-3-1">
+
+      <!-- Publico por banda (todas as noites) - compact + clickable -->
+      <div class="card pad clickable" id="openBandsModal">
+        <div class="card-title">
+          <div>
+            <h2 id="bandsCardTitle">Público por Banda — 27/12/2025 a 31/12/2025 — Virada Salvador (todas as bandas)</h2>
+            <div class="hint">Comparativo consolidado.</div>
+          </div>
+          <div class="title-actions">
+            <div class="select-wrap">
+              <select id="bandsEventFilter" class="select" aria-label="Filtrar evento do gráfico de público por banda">
+                
+                <option value="27-31/12" selected>27 a 31/12 — Virada Salvador (todas as bandas)</option>
+              </select>
+            </div>
+            <div class="chip rank"><span class="mini-dot"></span><span>ranking</span></div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-compact">
+          <canvas id="chartAllBandsCompact"></canvas>
+        </div>
+      </div>
+
+      <!-- Alertas Operacionais - match print + clickable -->
+      <div class="card pad clickable" id="openAlertsModal">
+        <div class="alerts">
+          <div class="section-h">
+            <h3>ALERTAS OPERACIONAIS</h3>
+            <div class="badge-rt"><span class="mini-dot"></span>tempo real</div>
+          </div>
+
+          <div id="alertsList">
+            <!-- injected -->
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="topcams">
+            <div class="top-h">
+              <div>TOP CÂMERAS (15 MIN)</div>
+              <div class="chip rank"><span class="mini-dot"></span><span>ranking</span></div>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:38%;">Câmera</th>
+                  <th>Local</th>
+                  <th style="width:14%;">IN</th>
+                  <th style="width:14%;">OUT</th>
+                </tr>
+              </thead>
+              <tbody id="topCamsBody">
+                <!-- injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ranking dos Maiores Públicos (replaces "fluxo agregado") -->
+    <div id="rankingPublicos" class="card pad">
+      <div class="rank-title">
+        <h2>Ranking dos Maiores Públicos</h2>
+        <div class="ranking-sub">Ranking dos 10 Maiores Públicos de 2024 </div>
+      </div>
+      <div class="chart-wrap chart-tall" style="margin-top:8px;">
+        <canvas id="chartBigRanking"></canvas>
+      </div>
+    </div>
+
+    <section id="mapaCalor" class="card pad" id="cardHeatmap">
+      <div class="card-title">
+        <div>
+          <h3>Mapa de calor por setor</h3>
+          <div class="hint">Intensidade por região (atualiza automaticamente).</div>
+        </div>
+        <div class="chip" id="heatLegendChip">
+          <span class="mini-dot" style="background: rgba(255,204,102,0.95)"></span>
+          <span>zonas</span>
+        </div>
+      </div>
+
+      <div class="heatmap-wrap">
+        <svg id="heatSvg" viewBox="0 0 2048 761" preserveAspectRatio="xMidYMid meet">
+          <g id="heatStage">
+            <image id="heatBaseImg"
+                  href="4Mapa de Calor - Virada 2026.png"
+                  x="0" y="-196"
+                  width="2048" height="1152"></image>
+
+            <g id="heatPolygons"></g>
+            <g id="heatLabels"></g>
+          </g>
+        </svg>
+
+      </div>
+
+      <div class="divider" style="margin:12px 0 10px;"></div>
+
+      <!-- legenda (vamos preencher via JS) -->
+      <div id="zonesLegend" class="zones-legend"></div>
+    </section>
+
+
+
+
+
+    <!-- Smart + Heatmap -->
+    <div class="smart-grid">
+      <div class="card pad">
+        <div class="card-title">
+          <div>
+            <h3>Indicadores inteligentes</h3>
+            <div class="hint">Cruzamentos simulados para validação visual.</div>
+          </div>
+          <div class="chip good"><span class="mini-dot"></span><span>baseline</span></div>
+        </div>
+
+        <div class="smart-item">
+          <div>Zona com pressão atípica</div>
+          <div class="v" id="z_pressure" style="color:var(--warn)">Entrada Orla</div>
+        </div>
+        <div class="smart-item">
+          <div>Câmera zerada com evento ativo!</div>
+          <div class="v" id="z_zero" style="color:var(--bad)">--</div>
+        </div>
+        <div class="smart-item">
+          <div>Aceleração repentina (3 min)</div>
+          <div class="v mono" id="z_accel" style="color:var(--warn)">+39%</div>
+        </div>
+        <div class="smart-item">
+          <div>Queda repentina após pico</div>
+          <div class="v mono" id="z_drop" style="color:var(--warn)">-44%</div>
+        </div>
+      </div>
+
+      <div class="card pad" id="predCard">
+        <div class="card-title">
+          <div>
+            <h3>Inteligência Preditiva</h3>
+            <div class="hint">Análise da IA Megan com base nos dados consolidados do dashboard.</div>
+          </div>
+          <div class="chip rank"><span class="mini-dot"></span><span>IA</span></div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0 12px;">
+          <div class="pill-state warn" id="pred_status">CARREGANDO</div>
+          <div class="chip" id="pred_conf" style="opacity:.9;"><span class="mini-dot" style="background:var(--blue)"></span><span>Confiança: --</span></div>
+          <div class="chip" id="pred_time" style="opacity:.9;"><span class="mini-dot" style="background:rgba(255,255,255,.35)"></span><span>Atualizado: --</span></div>
+        </div>
+
+        <div class="hint" id="pred_line" style="font-size:13px; line-height:1.45; color:rgba(255,255,255,.85);">
+          Carregando análise preditiva...
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+          <div class="card" style="padding:12px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);">
+            <div style="font-weight:900; letter-spacing:.08em; font-size:11px; color:rgba(255,255,255,.7); margin-bottom:8px;">RISCOS (PRÓX. 60 MIN)</div>
+            <ul id="pred_risks" style="margin:0; padding-left:18px; color:rgba(255,255,255,.9);"></ul>
+          </div>
+          <div class="card" style="padding:12px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);">
+            <div style="font-weight:900; letter-spacing:.08em; font-size:11px; color:rgba(255,255,255,.7); margin-bottom:8px;">AÇÕES RECOMENDADAS</div>
+            <ul id="pred_actions" style="margin:0; padding-left:18px; color:rgba(255,255,255,.9);"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cameras SALTUR -->
+    <div  class="card pad">
+      <div class="card-title">
+        <div>
+          <h3>Câmeras SALTUR (40)</h3>
+          <div class="hint">Snapshot + contagem + picos + status + alertas (detalhes no botão).</div>
+        </div>
+        <div class="chip"><span class="mini-dot" style="background:var(--good)"></span><span>monitoramento</span></div>
+      </div>
+      <div class="cameras-grid" id="camsSaltur"></div>
+    </div>
+
+    <!-- Cameras SSP -->
+    <div  id="camerasSSP" class="card pad">
+      <div class="card-title">
+        <div>
+          <h3>Câmeras SSP (8)</h3>
+          <div class="hint">Passantes + status (mesmo padrão visual).</div>
+        </div>
+        <div class="chip"><span class="mini-dot" style="background:var(--blue)"></span><span>SSP</span></div>
+      </div>
+      <div class="cameras-grid" id="camsSSP" style="grid-template-columns:repeat(4, minmax(220px, 1fr));"></div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: Bands (All Nights) -->
+  <div class="modal" id="modalBands">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3 id="modalBandsTitle">Público por Banda — 27/12/2025 a 31/12/2025 — Virada Salvador (todas as bandas) — Detalhes</h3>
+        <button class="modal-close" data-close="modalBands">Fechar</button>
+      </div>
+      <div class="modal-body">
+        <div class="card pad" style="box-shadow:none;">
+          <div class="card-title">
+            <div>
+              <h3>Comparativo consolidado</h3>
+              <div class="hint">Versão ampliada para leitura e validação.</div>
+            </div>
+            <div class="chip rank"><span class="mini-dot"></span><span>full</span></div>
+          </div>
+          <div class="chart-wrap" style="height:420px;">
+            <canvas id="chartAllBandsFull"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Alertas Operacionais -->
+  <div class="modal" id="modalAlerts">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3>Alertas Operacionais — Detalhes</h3>
+        <button class="modal-close" data-close="modalAlerts">Fechar</button>
+      </div>
+      <div class="modal-body">
+        <div class="card pad" style="box-shadow:none;">
+          <div class="section-h" style="margin-bottom:10px;">
+            <h3 style="margin:0;">ALERTAS OPERACIONAIS</h3>
+            <div class="badge-rt"><span class="mini-dot"></span>tempo real</div>
+          </div>
+
+          <div id="alertsListFull"></div>
+
+          <div class="divider" style="margin:14px 0;"></div>
+
+          <div class="topcams">
+            <div class="top-h">
+              <div>TOP CÂMERAS (15 MIN)</div>
+              <div class="chip rank"><span class="mini-dot"></span><span>ranking</span></div>
+            </div>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:28%;">Câmera</th>
+                  <th>Local</th>
+                  <th style="width:14%;">IN</th>
+                  <th style="width:14%;">OUT</th>
+                  <th style="width:14%;">Alertas</th>
+                </tr>
+              </thead>
+              <tbody id="topCamsBodyFull"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Camera details -->
+  <div class="modal" id="modalCam">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3 id="camModalTitle">Detalhes da Câmera</h3>
+        <button class="modal-close" data-close="modalCam">Fechar</button>
+      </div>
+      <div class="modal-body">
+        <div class="card pad" style="box-shadow:none;">
+          <div class="card-title">
+            <div>
+              <h3>Resumo operacional</h3>
+              <div class="hint">Placeholders (pronto para plugar no backend da Virada).</div>
+            </div>
+            <div class="chip warn"><span class="mini-dot"></span><span>alertas</span></div>
+          </div>
+
+          <div style="display:grid; gap:10px; grid-template-columns:repeat(4, minmax(180px,1fr)); margin-top:10px;">
+            <div class="smart-item" style="margin:0;">
+              <div>Contagem atual</div>
+              <div class="v mono" id="camModalNow">--</div>
+            </div>
+            <div class="smart-item" style="margin:0;">
+              <div>Pico da noite</div>
+              <div class="v mono" id="camModalPeakNight">--</div>
+            </div>
+            <div class="smart-item" style="margin:0;">
+              <div>Pico geral</div>
+              <div class="v mono" id="camModalPeakAll">--</div>
+            </div>
+            <div class="smart-item" style="margin:0;">
+              <div>Status</div>
+              <div class="v" id="camModalStatus">--</div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:14px 0;"></div>
+
+          <div class="card pad" style="box-shadow:none; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div id="camModalHistTitle" style="font-weight:900; letter-spacing:.2px; color:rgba(255,255,255,.86);">Histórico completo (XLS)</div>
+              <div class="chip"><span class="mini-dot" style="background:var(--blue)"></span><span>timeline</span></div>
+            </div>
+            <div class="chart-wrap" style="height:260px; margin-top:10px;">
+              <canvas id="camModalChart"></canvas>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:14px 0;"></div>
+
+          <div style="font-weight:900; margin-bottom:10px; letter-spacing:.2px; color:rgba(255,255,255,.86);">Histórico completo (lista)</div>
+          <div id="camModalHistory"></div>
+
+          <div class="divider" style="margin:14px 0;"></div>
+
+          <div style="font-weight:900; margin-bottom:10px; letter-spacing:.2px; color:rgba(255,255,255,.86);">Alertas da câmera</div>
+          <div id="camModalAlerts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ZONA (mapa de calor) -->
+  <div class="modal" id="modalZone">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <div>
+          <h3 id="zoneModalTitle">Detalhes da Zona</h3>
+          <div class="hint" id="zoneModalSub">Histórico por dia e por período.</div>
+        </div>
+        <button class="modal-close" data-close="modalZone">Fechar</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="card pad" style="box-shadow:none;">
+          <div class="card-title">
+            <div>
+              <h3>Resumo operacional</h3>
+              <div class="hint">Período: 12/05/2025 até 31/05/2025 (placeholders — pronto para plugar no banco).</div>
+            </div>
+            <div class="chip rank"><span class="mini-dot"></span><span>zona</span></div>
+          </div>
+
+          <div class="smart-grid" style="margin-top:10px;">
+            <div class="card pad" style="border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+              <div class="k-label">Total no período</div>
+              <div class="k-value mono" id="zoneKpiTotal">--</div>
+              <div class="k-sub">Somatório estimado (todas as câmeras da zona).</div>
+            </div>
+            <div class="card pad" style="border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+              <div class="k-label">Média por dia</div>
+              <div class="k-value mono" id="zoneKpiAvg">--</div>
+              <div class="k-sub">Média diária no período.</div>
+            </div>
+            <div class="card pad" style="border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+              <div class="k-label">Pico do período</div>
+              <div class="k-value mono" id="zoneKpiPeak">--</div>
+              <div class="k-sub" id="zoneKpiPeakSub">--</div>
+            </div>
+            <div class="card pad" style="border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+              <div class="k-label">Status (fluxo)</div>
+              <div class="k-value mono" id="zoneKpiStatus">--</div>
+              <div class="k-sub">Z08 usa regra “últimos 5 min vs média”.</div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:14px 0;"></div>
+
+          <div class="row-3-1" style="grid-template-columns: 1.3fr .7fr;">
+            <div class="card pad" style="box-shadow:none; border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <div style="font-weight:900; letter-spacing:.2px; color:rgba(255,255,255,.86);">Histórico diário</div>
+                <div class="chip"><span class="mini-dot" style="background:var(--blue)"></span><span>dia</span></div>
+              </div>
+              <div class="chart-wrap" style="height:280px; margin-top:10px;">
+                <canvas id="zoneChartDaily"></canvas>
+              </div>
+            </div>
+
+            <div class="card pad" style="box-shadow:none; border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <div style="font-weight:900; letter-spacing:.2px; color:rgba(255,255,255,.86);">Por período</div>
+                <div class="chip"><span class="mini-dot" style="background:var(--amber)"></span><span>turnos</span></div>
+              </div>
+              <div class="chart-wrap" style="height:280px; margin-top:10px;">
+                <canvas id="zoneChartPeriods"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:14px 0;"></div>
+
+          <div class="card pad" style="box-shadow:none; border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div style="font-weight:900; letter-spacing:.2px; color:rgba(255,255,255,.86);">Tabela por dia</div>
+              <div class="chip"><span class="mini-dot" style="background:rgba(255,255,255,.35)"></span><span>detalhe</span></div>
+            </div>
+            <div class="table-wrap" style="margin-top:10px; max-height:220px; overflow:auto;">
+              <table class="tbl" id="zoneTable">
+                <thead><tr><th>Data</th><th>Total</th><th>Manhã</th><th>Tarde</th><th>Noite</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    /* ============================================================
+       MOCK + BACKEND-READY CONTRACT (placeholders)
+       ============================================================ */
+    const API = {
+      baseUrl: "" ,  // <- backend novo da virada (futuro)
+      endpoints: {
+        kpis: "/api/virada/kpis",
+        ranking: "/api/virada/ranking_publicos",
+        publico_bandas_all: "/api/virada/publico_bandas/all",
+        publico_bandas_noite: (date) => `/api/virada/publico_bandas/noite?date=${encodeURIComponent(date)}`,
+        alertas: "/api/virada/alertas",
+        top_cameras: "/api/virada/top_cameras",
+        cameras: "/api/virada/cameras",
+        camera_detail: (id) => `/api/virada/camera/${encodeURIComponent(id)}`
+      }
+    };
+// ========================= BACKEND / AUTH =========================
+const BACKEND = {
+  enabled: true,
+  token: localStorage.getItem("virada_token") || null,
+  user: null
+};
+
+async function apiFetch(path, opts = {}) {
+  const url = (API.baseUrl || "") + path;
+  const headers = Object.assign(
+    { "Content-Type": "application/json" },
+    opts.headers || {}
+  );
+  if (BACKEND.token) headers["Authorization"] = "Bearer " + BACKEND.token;
+
+  const res = await fetch(url, {
+    method: opts.method || "GET",
+    headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+
+  // token expirada / inválida
+  if (res.status === 401) {
+    BACKEND.token = null;
+    localStorage.removeItem("virada_token");
+    showAuthOverlay(true);
+    throw new Error("401 - não autenticado");
+  }
+
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) return await res.json();
+  const txt = await res.text();
+  return { ok: res.ok, text: txt };
+}
+
+function showAuthOverlay(force = false) {
+  const el = document.getElementById("authOverlay");
+  if (!el) return;
+  if (!BACKEND.enabled) { el.style.display = "none"; return; }
+  if (force || !BACKEND.token) {
+    el.style.display = "flex";
+  } else {
+    el.style.display = "none";
+  }
+}
+
+async function doLogin(username, password) {
+  const out = await apiFetch("/api/auth/login", { method: "POST", body: { username, password } });
+  if (!out || !out.token) throw new Error("login inválido");
+  BACKEND.token = out.token;
+  localStorage.setItem("virada_token", out.token);
+  showAuthOverlay(false);
+  return out;
+}
+
+async function pullBackend() {
+  // Você pode ampliar isso depois para puxar mais dados (banco real por banda etc.)
+  const [k, a, t, z] = await Promise.allSettled([
+    apiFetch("/api/virada/kpis"),
+    apiFetch("/api/virada/alertas"),
+    apiFetch("/api/virada/top_cameras"),
+    apiFetch("/api/virada/zones/current")
+  ]);
+
+  if (k.status === "fulfilled" && k.value) {
+    state.kpis = Object.assign({}, state.kpis, k.value);
+  }
+  if (a.status === "fulfilled" && a.value) {
+    const items = a.value.items || a.value.alerts || [];
+    state.alerts = Array.isArray(items) ? items : [];
+    state.kpis.alertsActive = state.alerts.filter(x => (x.level || x.severity) !== "info").length;
+  }
+  if (t.status === "fulfilled" && t.value) {
+    const rows = t.value.rows || t.value.top || t.value.data || [];
+    state.topCams15 = Array.isArray(rows) ? rows : state.topCams15;
+  }
+  if (z.status === "fulfilled" && z.value) {
+    if (z.value.heatValues && typeof z.value.heatValues === "object") {
+      // heatValues é lido pela updateHeatmap()
+      heatValues = z.value.heatValues;
+      updateHeatmap();
+    }
+  }
+}
+// ======================= / BACKEND / AUTH =========================
+
+
+    /* ============================================================
+       UTIL
+       ============================================================ */
+    const fmtInt = (n) => n.toLocaleString("pt-BR");
+    const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+    const rand = (min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+    const pick = (arr)=>arr[Math.floor(Math.random()*arr.length)];
+    
+
+    function nowISOAnchor(){
+      const d = new Date();
+      const pad = (x)=>String(x).padStart(2,"0");
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    /* ============================================================
+       STATE (fictitious but realistic-ish)
+       ============================================================ */
+    const state = {
+      kpis: {
+        now: 141106,
+        peakNight: 257487,
+        total: 1094081,
+        alertsActive: 2,
+        status: "OK"
+      },
+      zones: ["ENTRADA ORLA 1","ENTRADA ORLA 2","ENTRADA AVENIDA 1","ENTRADA AVENIDA 2","ENTRADA CAMAROTE 1","ENTRADA CAMAROTE 2","SAÍDA"],
+      smart: {
+        pressureZone: "Entrada Orla",
+        zeroCam: "--",
+        accel3m: 3,
+        dropAfterPeak: 0
+      },
+      allBands: [],
+      rankingTop10: [],
+      nights: {
+        "27/12": [
+            { label: "Léo Foguete", value: 48361 },
+            { label: "Léo Santana", value: 71118 },
+            { label: "Wesley Safadão", value: 84001 },
+            { label: "Xand Avião", value: 81935 },
+            { label: "Parangolé", value: 26119 }
+        ],
+        "28/12": [
+            { label: "Edson Gomes", value: 48111 },
+            { label: "Claudia Leitte", value: 82761 },
+            { label: "Simone Mendes", value: 0 },
+            { label: "Pablo", value: 0 },
+            { label: "Tony Salles", value: 0 }
+        ],
+        "29/12": [
+            { label: "Durval Lélys", value: 0 },
+            { label: "Nattan", value: 0 },
+            { label: "Natanzinho Lima", value: 0 },
+            { label: "Matheus e Kauan", value: 0 },
+            { label: "Psirico", value: 0 }
+        ],
+        "30/12": [
+            { label: "Olodum", value: 0 },
+            { label: "Alok", value: 0 },
+            { label: "Bell Marques", value: 0 },
+            { label: "Belo", value: 0 },
+            { label: "Felipe Amorim", value: 0 }
+        ],
+        "31/12": [
+            { label: "Xanddy Harmonia", value: 0 },
+            { label: "Jorge e Mateus", value: 0 },
+            { label: "Ivete Sangalo", value: 0 },
+            { label: "Mari Fernandez", value: 0 },
+            { label: "Manu Bahtidão", value: 0 },
+            { label: "Timbalada", value: 0 }
+        ]
+        },
+
+      alerts: [
+        { msg:"Movimento extremamente intenso (+87% em 30 min).", meta:"ENTRADA AVENIDA · 20:00", level:"BAD" },
+        { msg:"Movimento semi intenso (+57% em 30 min).", meta:"ENTRADA ORLA 2 · 20:00", level:"WARN" },
+        { msg:"Áreas livres (+0% em 10 min).", meta:"SAÍDA · 19:00", level:"WARN" }
+      ],
+      topCams15: [
+        { cam:"ENTRADA AVENIDA", local:"Orla — Acesso", in:21317, out:0, alerts:1 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:10658, out:0, alerts:1 }
+      ],
+      camsSaltur: [],
+      camsSSP: [],
+    };
+
+    // Consolida automaticamente o ranking (todas as noites)
+    // Isso garante que o card “Público por Banda (Todas as noites)” sempre tenha TODAS as bandas.
+    const dayOrder = ["27/12","28/12","29/12","30/12","31/12"];
+
+    state.allBands = dayOrder.flatMap(day =>
+    (state.nights[day] || []).map(x => ({ label: `${x.label} (${day})`, value: x.value }))
+    );
+
+    /* ============================================================
+       EVENT FILTER (Bands main chart)
+       - 25/12: Show Frei Gilson
+       - 26/12: Show Roberto Carlos
+       - 27–31/12: Virada Salvador (todas as bandas)
+       ============================================================ */
+    const DAY_COLORS = {
+      "25/12": "rgba(120,200,255,.82)",  // azul claro (frio)
+      "26/12": "rgba(255,140,120,.82)",  // laranja (morno)
+      "27/12": "rgba(176,107,255,.82)",
+      "28/12": "rgba(227,107,107,.82)",
+      "29/12": "rgba(107,155,255,.82)",
+      "30/12": "rgba(255,204,102,.82)",
+      "31/12": "rgba(46,229,157,.82)"
+    };
+
+    const ALL_BANDS_VIRADA = [...state.allBands];
+
+    const ALL_BANDS_EVENTS = {
+      "25/12": [{ label: "Frei Gilson (25/12)", value: 95380 }],       // placeholder
+      "26/12": [{ label: "Roberto Carlos (26/12)", value: 0 }],   // placeholder
+      "27-31/12": ALL_BANDS_VIRADA
+    };
+
+    state.selectedBandsEvent = "27-31/12";
+
+    function bandsEventTitle(key){
+      if(key==="25/12") return "25/12 — Show Frei Gilson";
+      if(key==="26/12") return "26/12 — Show Roberto Carlos";
+      return "27–31/12 — Virada Salvador (todas as bandas)";
+    }
+
+    function getSelectedAllBands(){
+      return ALL_BANDS_EVENTS[state.selectedBandsEvent] || ALL_BANDS_VIRADA;
+    }
+
+    function getDayFromLabel(lbl){
+      return lbl.match(/\((\d{2}\/\d{2})\)/)?.[1];
+    }
+
+    function barColorsFromLabels(labels){
+      return labels.map(l => {
+        const day = getDayFromLabel(l);
+        return DAY_COLORS[day] || "rgba(255,255,255,.50)";
+      });
+    }
+
+    function applyBandsEventTitle(){
+      const title = "Público por Banda — " + bandsEventTitle(state.selectedBandsEvent);
+      const t1 = document.getElementById("bandsCardTitle");
+      if(t1) t1.textContent = title;
+      const t2 = document.getElementById("modalBandsTitle");
+      if(t2) t2.textContent = title + " — Detalhes";
+    }
+
+    function updateAllBandsCharts(){
+      const items = [...getSelectedAllBands()];
+      const labels = items.map(x=>x.label);
+      const values = items.map(x=>x.value);
+      const colors = barColorsFromLabels(labels);
+
+      if(charts.allBandsCompact){
+        charts.allBandsCompact.data.labels = labels;
+        charts.allBandsCompact.data.datasets[0].data = values;
+        charts.allBandsCompact.data.datasets[0].backgroundColor = colors;
+        charts.allBandsCompact.update();
+      }
+      if(charts.allBandsFull){
+        charts.allBandsFull.data.labels = labels;
+        charts.allBandsFull.data.datasets[0].data = values;
+        charts.allBandsFull.data.datasets[0].backgroundColor = colors;
+        charts.allBandsFull.update();
+      }
+    }
+
+    function wireBandsFilter(){
+      const sel = document.getElementById("bandsEventFilter");
+      if(!sel) return;
+      sel.value = state.selectedBandsEvent;
+
+      // Evita que clicar no select abra o modal do card
+      ["click","mousedown","touchstart"].forEach(evt => {
+        sel.addEventListener(evt, (e)=> e.stopPropagation());
+      });
+
+      sel.addEventListener("change", ()=>{
+        state.selectedBandsEvent = sel.value;
+        applyBandsEventTitle();
+        updateAllBandsCharts();
+      });
+    }
+
+
+    // ============================================================
+    // XLS (Virada_Dia27) -> JSON (colar e substituir quando atualizar o Excel)
+    // Colunas do XLS: IN_ORLA, IN_AVENIDA, IN_TOTAL, OUT, PICO
+    // ============================================================
+    const XLS_DIA27 = [
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "18:30",
+        "Banda": "Chegada (Pré-show)",
+        "IN_ORLA": 5417,
+        "IN_AVENIDA": 3491,
+        "IN_TOTAL": 8908,
+        "OUT": 847,
+        "PICO": 8061
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "19:00",
+        "Banda": "Chegada (Pré-show)",
+        "IN_ORLA": 10834,
+        "IN_AVENIDA": 6981,
+        "IN_TOTAL": 17815,
+        "OUT": 1695,
+        "PICO": 16120
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "19:30",
+        "Banda": "Leo Foguete",
+        "IN_ORLA": 16250,
+        "IN_AVENIDA": 10472,
+        "IN_TOTAL": 26722,
+        "OUT": 2542,
+        "PICO": 24180
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "20:00",
+        "Banda": "Leo Foguete",
+        "IN_ORLA": 21667,
+        "IN_AVENIDA": 13963,
+        "IN_TOTAL": 35630,
+        "OUT": 3389,
+        "PICO": 32241
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "20:30",
+        "Banda": "Leo Foguete",
+        "IN_ORLA": 27084,
+        "IN_AVENIDA": 17454,
+        "IN_TOTAL": 44538,
+        "OUT": 4237,
+        "PICO": 40301
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "21:00",
+        "Banda": "Leo Foguete",
+        "IN_ORLA": 32501,
+        "IN_AVENIDA": 20944,
+        "IN_TOTAL": 53445,
+        "OUT": 5084,
+        "PICO": 48361
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "21:30",
+        "Banda": "Leo Santana",
+        "IN_ORLA": 38617,
+        "IN_AVENIDA": 24886,
+        "IN_TOTAL": 63503,
+        "OUT": 7556,
+        "PICO": 55947
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "22:00",
+        "Banda": "Leo Santana",
+        "IN_ORLA": 44734,
+        "IN_AVENIDA": 28826,
+        "IN_TOTAL": 73560,
+        "OUT": 8554,
+        "PICO": 65006
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "22:30",
+        "Banda": "Leo Santana",
+        "IN_ORLA": 48648,
+        "IN_AVENIDA": 29914,
+        "IN_TOTAL": 78562,
+        "OUT": 9987,
+        "PICO": 68575
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "23:00",
+        "Banda": "Leo Santana",
+        "IN_ORLA": 50850,
+        "IN_AVENIDA": 32768,
+        "IN_TOTAL": 83618,
+        "OUT": 12500,
+        "PICO": 71118
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "23:30",
+        "Banda": "Wesley Safadão",
+        "IN_ORLA": 58568,
+        "IN_AVENIDA": 37742,
+        "IN_TOTAL": 96310,
+        "OUT": 18750,
+        "PICO": 77560
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "00:00",
+        "Banda": "Wesley Safadão",
+        "IN_ORLA": 62427,
+        "IN_AVENIDA": 40228,
+        "IN_TOTAL": 102655,
+        "OUT": 21875,
+        "PICO": 80780
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "00:30",
+        "Banda": "Wesley Safadão",
+        "IN_ORLA": 66282,
+        "IN_AVENIDA": 42715,
+        "IN_TOTAL": 108997,
+        "OUT": 24996,
+        "PICO": 84001
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "01:00",
+        "Banda": "Wesley Safadão",
+        "IN_ORLA": 68091,
+        "IN_AVENIDA": 43878,
+        "IN_TOTAL": 111969,
+        "OUT": 29097,
+        "PICO": 82872
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "01:30",
+        "Banda": "Xand",
+        "IN_ORLA": 69896,
+        "IN_AVENIDA": 45040,
+        "IN_TOTAL": 114936,
+        "OUT": 33001,
+        "PICO": 81935
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "02:00",
+        "Banda": "Xand",
+        "IN_ORLA": 69143,
+        "IN_AVENIDA": 44444,
+        "IN_TOTAL": 113587,
+        "OUT": 41043,
+        "PICO": 72544
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "02:30",
+        "Banda": "Xand",
+        "IN_ORLA": 68390,
+        "IN_AVENIDA": 43848,
+        "IN_TOTAL": 112238,
+        "OUT": 49084,
+        "PICO": 63154
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "03:00",
+        "Banda": "Parangolé",
+        "IN_ORLA": 67637,
+        "IN_AVENIDA": 43251,
+        "IN_TOTAL": 110888,
+        "OUT": 57126,
+        "PICO": 53762
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "03:30",
+        "Banda": "Parangolé",
+        "IN_ORLA": 66884,
+        "IN_AVENIDA": 42655,
+        "IN_TOTAL": 109539,
+        "OUT": 65168,
+        "PICO": 44371
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "04:00",
+        "Banda": "Parangolé",
+        "IN_ORLA": 70256,
+        "IN_AVENIDA": 45363,
+        "IN_TOTAL": 115619,
+        "OUT": 82410,
+        "PICO": 33209
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "04:30",
+        "Banda": "Parangolé",
+        "IN_ORLA": 71794,
+        "IN_AVENIDA": 46266,
+        "IN_TOTAL": 118060,
+        "OUT": 107034,
+        "PICO": 11026
+      },
+      {
+        "Data_ref": "2025-12-27",
+        "Hora": "05:00",
+        "Banda": "Parangolé",
+        "IN_ORLA": 71794,
+        "IN_AVENIDA": 46266,
+        "IN_TOTAL": 118060,
+        "OUT": 116000,
+        "PICO": 2060
+      }
+    ];
+
+
+    const __SSP_MANUAL_KEY = "ssp_manual_override_v1";
+
+    function sspLoadManual(){
+      try { return JSON.parse(localStorage.getItem(__SSP_MANUAL_KEY) || "{}"); }
+      catch { return {}; }
+    }
+    function sspSaveManual(obj){
+      localStorage.setItem(__SSP_MANUAL_KEY, JSON.stringify(obj || {}));
+    }
+
+    function sspAgg(rows){
+      const safe = (n)=> (Number.isFinite(+n) ? +n : 0);
+      const last = rows[rows.length - 1] || {};
+      const sum = (k)=> rows.reduce((acc,r)=> acc + safe(r[k]), 0);
+      const max = (k)=> rows.reduce((m,r)=> Math.max(m, safe(r[k])), 0);
+
+      return {
+        last,
+        sums: {
+          IN_ORLA: sum("IN_ORLA"),
+          IN_AVENIDA: sum("IN_AVENIDA"),
+          IN_TOTAL: sum("IN_TOTAL"),
+          OUT: sum("OUT"),
+        },
+        maxs: {
+          IN_ORLA: max("IN_ORLA"),
+          IN_AVENIDA: max("IN_AVENIDA"),
+          OUT: max("OUT"),
+          PICO: max("PICO")
+        }
+      };
+    }
+
+    // Rebuild dos "cards SSP" a partir do XLS + manual override
+    function rebuildSSPSectors(){
+      const manual = sspLoadManual();
+      const a = sspAgg(XLS_DIA27);
+
+      // KPIs principais (usando o XLS)
+      state.kpis.now = a.last.PICO;            // pessoas presentes agora
+      state.kpis.peakNight = a.maxs.PICO;      // pico da noite
+      state.kpis.total = a.sums.IN_TOTAL;      // total acumulado (somatório dos intervalos)
+      // alertasActive/status você já controla pelo seu pipeline de alertas; aqui só preserva:
+      state.kpis.alertsActive = state.kpis.alertsActive ?? 0;
+      state.kpis.status = (state.kpis.alertsActive >= 5) ? "ATENÇÃO" : "OK";
+
+      // Setores: Orla / Avenida / Camarote / Saída
+      const inCamarote = Number.isFinite(+manual.IN_CAMAROTE) ? +manual.IN_CAMAROTE : null;
+
+      state.camsSSP = [
+        {
+          id: "SSP_IN_ORLA",
+          name: "Entradas Orla (SSP 1 + SSP 2)",
+          status: "ON",
+          passantes: 10658,
+          peakNight: a.maxs.IN_ORLA,
+          
+          alerts: 0
+        },
+        {
+          id: "SSP_IN_AVENIDA",
+          name: "Entradas Avenida (SSP 3 + SSP 4 + SSP 5)",
+          status: "ON",
+          passantes: 21317,
+          peakNight: a.maxs.IN_AVENIDA,
+          
+          alerts: 0
+        },
+        {
+          id: "SSP_IN_CAMAROTE",
+          name: "Entradas Camarote (SSP 6 + SSP 7)",
+          status: "ON",
+          passantes: 2325,     // manual
+          peakNight: inCamarote,
+          
+          alerts: 0
+        },
+        {
+          id: "SSP_OUT",
+          name: "Saídas (SSP 8)",
+          status: "ON",
+          passantes: 1071,
+          peakNight: a.maxs.OUT,
+          
+          alerts: 0
+        }
+      ];
+
+      // Atualiza inputs do editor
+      const elOrla = document.getElementById("m_in_orla");
+      const elAv = document.getElementById("m_in_avenida");
+      const elCam = document.getElementById("m_in_camarote");
+      const elOut = document.getElementById("m_out");
+      if(elOrla) elOrla.value = a.last.IN_ORLA ?? "";
+      if(elAv) elAv.value = a.last.IN_AVENIDA ?? "";
+      if(elOut) elOut.value = a.last.OUT ?? "";
+      if(elCam) elCam.value = (inCamarote ?? "");
+    }
+
+    function wireSSPManualEditor(){
+      const btnApply = document.getElementById("m_apply_ssp");
+      const btnClear = document.getElementById("m_clear_ssp");
+      const elCam = document.getElementById("m_in_camarote");
+
+      if(btnApply){
+        btnApply.addEventListener("click", ()=>{
+          const v = elCam ? elCam.value : "";
+          const manual = sspLoadManual();
+          if(v === "" || v === null || v === undefined){
+            delete manual.IN_CAMAROTE;
+          } else {
+            manual.IN_CAMAROTE = Number(v);
+          }
+          sspSaveManual(manual);
+          rebuildSSPSectors();
+          renderKPIs();
+          renderCameras();
+        });
+      }
+
+      if(btnClear){
+        btnClear.addEventListener("click", ()=>{
+          sspSaveManual({});
+          rebuildSSPSectors();
+          renderKPIs();
+          renderCameras();
+        });
+      }
+    }
+
+
+
+    // Build camera inventories
+    function initCameras(){
+      // SALTUR 40
+      state.camsSaltur = [];
+      for(let i=1;i<=40;i++){
+        state.camsSaltur.push({
+          id:`SALTUR_${i}`,
+          name:`Câmera ${i}`,
+          status: (Math.random()<0.05) ? "OFF" : "ON",
+          now: rand(0, 620),
+          peakNight: rand(450, 2200),
+          peakAll: rand(900, 3800),
+          alerts: rand(0, 4)
+        });
+      }
+      // SSP 8
+      state.camsSSP = [];
+      // SSP (setores) — vem do XLS + manual override
+      rebuildSSPSectors();
+
+      rebuildRankingTop10();
+    }
+
+    // Ranking top 10 from allBands values
+    function rebuildRankingTop10(){
+      state.rankingTop10 = [...state.allBands]
+        .sort((a,b)=>b.value-a.value)
+        .slice(0,10);
+    }
+
+    /* ============================================================
+       DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
+       ============================================================ */
+    function renderKPIs(){
+      document.getElementById("k_now").textContent = 82.761
+      document.getElementById("k_peak").textContent = 89.992
+      document.getElementById("k_total").textContent = 82.761
+      document.getElementById("k_alerts").textContent = 208.052     //27/12 = 118.060
+      document.getElementById("k_status").textContent = state.kpis.status;
+
+      document.getElementById("z_pressure").textContent = state.smart.pressureZone;
+      document.getElementById("z_zero").textContent = state.smart.zeroCam;
+      document.getElementById("z_accel").textContent = `+${state.smart.accel3m}%`;
+      document.getElementById("z_drop").textContent = `-${state.smart.dropAfterPeak}%`;
+    }
+
+    function renderAlerts(){
+      const root = document.getElementById("alertsList");
+      const full = document.getElementById("alertsListFull");
+      root.innerHTML = "";
+      full.innerHTML = "";
+
+      const makeItem = (a)=>`
+        <div class="alert-item">
+          <div class="txt">
+            <div class="msg">${a.msg}</div>
+            <div class="meta">${a.meta}</div>
+          </div>
+          <div class="pill-state ${a.level==="BAD"?"bad":"warn"}">${a.level}</div>
+        </div>
+      `;
+
+      // compact: show up to 3
+      state.alerts.slice(0,3).forEach(a=> root.innerHTML += makeItem(a));
+
+      // full: show all
+      state.alerts.forEach(a=> full.innerHTML += makeItem(a));
+    }
+
+    function renderTopCams(){
+      const tb = document.getElementById("topCamsBody");
+      const tbF = document.getElementById("topCamsBodyFull");
+      tb.innerHTML = "";
+      tbF.innerHTML = "";
+
+      state.topCams15.forEach(r=>{
+        tb.innerHTML += `
+          <tr>
+            <td style="font-weight:900;">${r.cam}</td>
+            <td class="local">${r.local}</td>
+            <td class="in mono">${r.in}</td>
+            <td class="out mono">${r.out}</td>
+          </tr>
+        `;
+        tbF.innerHTML += `
+          <tr>
+            <td style="font-weight:900;">${r.cam}</td>
+            <td class="local">${r.local}</td>
+            <td class="in mono">${r.in}</td>
+            <td class="out mono">${r.out}</td>
+            <td class="mono" style="color:rgba(255,255,255,.78); font-weight:900;">${r.alerts}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderCameras(){
+      const rootS = document.getElementById("camsSaltur");
+      const rootP = document.getElementById("camsSSP");
+      rootS.innerHTML = "";
+      rootP.innerHTML = "";
+
+      const camTpl = (c, isSSP=false)=>{
+        const statusClass = (c.status==="ON") ? "on" : "off";
+        const nowLabel = isSSP ? "Passantes" : "Pessoas";
+        const nowVal = isSSP ? c.passantes : c.now;
+
+        return `
+          <div class="cam">
+            <div class="snap">
+              <div class="camname">${isSSP ? c.name : c.name}</div>
+              <div class="st ${statusClass}">${c.status}</div>
+            </div>
+            <div class="body">
+              <div class="row"><div>${nowLabel} hoje</div><div class="n mono">${nowVal}</div></div>
+              <div class="row"><div>Acumulado de passantes</div><div class="n mono">${c.peakNight}</div></div>
+              <div class="row"><div>Fluxo</div><div class="n mono">${c.peakAll}</div></div>
+              <div class="row"><div>Alertas</div><div class="n mono" style="color:${c.alerts? 'var(--warn)':'rgba(255,255,255,.75)'};">${c.alerts}</div></div>
+              <button class="btn" data-cam="${c.id}" data-isssp="${isSSP?'1':'0'}">Ver detalhes</button>
+            </div>
+          </div>
+        `;
+      };
+
+      state.camsSaltur.forEach(c=> rootS.innerHTML += camTpl(c,false));
+      state.camsSSP.forEach(c=> rootP.innerHTML += camTpl(c,true));
+    }
+
+    /* ============================================================
+       CHARTS
+       ============================================================ */
+    const charts = {
+      sp_now:null, sp_peak:null, sp_total:null, sp_alerts:null, sp_status:null,
+      allBandsCompact:null, allBandsFull:null,
+      bigRanking:null,
+      night27:null, night28:null, night29:null, night30:null, night31:null,
+      camModal:null
+    };
+
+    function baseChartOptions(){
+      return {
+        responsive:true,
+        maintainAspectRatio:false,
+        animation:false,
+        plugins:{
+          legend:{ display:false },
+          tooltip:{
+            enabled:true,
+            backgroundColor:"#0b111a",
+            borderColor:"rgba(255,255,255,.10)",
+            borderWidth:1,
+            titleColor:"rgba(255,255,255,.92)",
+            bodyColor:"rgba(255,255,255,.85)",
+            padding:10
+          }
+        },
+        scales:{
+          x:{
+            ticks:{ color:"rgba(255,255,255,.65)", maxRotation:0, autoSkip:true },
+            grid:{ color:"rgba(255,255,255,.06)" }
+          },
+          y:{
+            ticks:{ color:"rgba(255,255,255,.55)" },
+            grid:{ color:"rgba(255,255,255,.06)" },
+            beginAtZero:true
+          }
+        }
+      };
+    }
+
+    function sparkOptions(){
+      return {
+        responsive:true,
+        maintainAspectRatio:false,
+        animation:false,
+        plugins:{ legend:{display:false}, tooltip:{enabled:false} },
+        scales:{
+          x:{ display:false, grid:{display:false} },
+          y:{ display:false, grid:{display:false} }
+        },
+        elements:{ point:{ radius:0 }, line:{ borderWidth:2 } }
+      };
+    }
+
+    function createSpark(canvasId, color){
+      const ctx = document.getElementById(canvasId);
+      const data = Array.from({length:22}, (_,i)=>rand(40,110));
+      return new Chart(ctx, {
+        type:"line",
+        data:{
+          labels:data.map((_,i)=>i),
+          datasets:[{
+            data,
+            borderColor:color,
+            backgroundColor:color.replace("1)",".18)"),
+            tension:.38,
+            fill:false
+          }]
+        },
+        options:sparkOptions()
+      });
+    }
+
+    // "day" = mantém a ordem definida em state.allBands (ex.: agrupado por dia)
+    // "ranking" = ordena por quantidade (desc)
+    const ALL_BANDS_ORDER_MODE = "day";
+
+    function getAllBandsOrdered(){
+    if (ALL_BANDS_ORDER_MODE === "ranking") {
+        return [...state.allBands].sort((a,b)=>b.value-a.value);
+    }
+    return [...state.allBands]; // preserva a ordem original (por dia)
+    }
+
+
+    function createAllBandsCompact(){
+      const canvas = document.getElementById("chartAllBandsCompact");
+      if(!canvas) return null;
+
+      const items = [...getSelectedAllBands()];
+      const labels = items.map(x=>x.label);
+      const values = items.map(x=>x.value);
+
+      // cores por dia (DAY_COLORS)
+      const colors = barColorsFromLabels(labels);
+
+      return new Chart(canvas, {
+        type:"bar",
+        data:{
+          labels,
+          datasets:[{
+            label:"Público",
+            data: values,
+            backgroundColor: colors,
+            borderRadius: 10,
+            borderSkipped: false,
+            categoryPercentage: 0.92,
+            barPercentage: 0.92,
+            maxBarThickness: 22
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          animation:false,
+          plugins:{
+            legend:{ display:false },
+            tooltip:{
+              enabled:true,
+              backgroundColor:"#0b111a",
+              borderColor:"rgba(255,255,255,.10)",
+              borderWidth:1,
+              titleColor:"rgba(255,255,255,.92)",
+              bodyColor:"rgba(255,255,255,.85)",
+              padding:10,
+              callbacks:{
+                label:(ctx)=>` ${fmtInt(ctx.parsed.y)}`
+              }
+            }
+          },
+          scales:{
+            x:{
+              ticks:{
+                color:"rgba(255,255,255,.75)",
+                maxRotation: 60,
+                minRotation: 60,
+                autoSkip: false,
+                font:{ size: 11 }
+              },
+              grid:{ color:"rgba(255,255,255,.06)" }
+            },
+            y:{
+              beginAtZero:true,
+              ticks:{
+                color:"rgba(255,255,255,.65)",
+                callback:(v)=> (v>=1000? (v/1000).toFixed(0)+"k" : v)
+              },
+              grid:{ color:"rgba(255,255,255,.06)" }
+            }
+          }
+        }
+      });
+    }
+
+    function createAllBandsFull(){
+      const canvas = document.getElementById("chartAllBandsFull");
+      if(!canvas) return null;
+
+      const items = [...getSelectedAllBands()];
+      const labels = items.map(x=>x.label);
+      const values = items.map(x=>x.value);
+
+      // cores por dia (DAY_COLORS)
+      const colors = barColorsFromLabels(labels);
+
+      return new Chart(canvas, {
+        type:"bar",
+        data:{
+          labels,
+          datasets:[{
+            label:"Público",
+            data: values,
+            backgroundColor: colors,
+            borderRadius: 10,
+            borderSkipped: false,
+            categoryPercentage: 0.92,
+            barPercentage: 0.92,
+            maxBarThickness: 26
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          animation:false,
+          plugins:{
+            legend:{ display:false },
+            tooltip:{
+              enabled:true,
+              backgroundColor:"#0b111a",
+              borderColor:"rgba(255,255,255,.10)",
+              borderWidth:1,
+              titleColor:"rgba(255,255,255,.92)",
+              bodyColor:"rgba(255,255,255,.85)",
+              padding:10,
+              callbacks:{
+                label:(ctx)=>` ${fmtInt(ctx.parsed.y)}`
+              }
+            }
+          },
+          scales:{
+            x:{
+              ticks:{
+                color:"rgba(255,255,255,.80)",
+                maxRotation: 55,
+                minRotation: 55,
+                autoSkip: false,
+                font:{ size: 12 }
+              },
+              grid:{ color:"rgba(255,255,255,.06)" }
+            },
+            y:{
+              beginAtZero:true,
+              ticks:{
+                color:"rgba(255,255,255,.70)",
+                callback:(v)=> (v>=1000? (v/1000).toFixed(0)+"k" : v)
+              },
+              grid:{ color:"rgba(255,255,255,.06)" }
+            }
+          }
+        }
+      });
+    }
+
+    function createBigRanking(){
+      const ctx = document.getElementById("chartBigRanking");
+      const items = [...state.rankingTop10]; // already top10 sorted
+      return new Chart(ctx,{
+        type:"bar",
+        data:{
+          labels: items.map(x=>x.label),
+          datasets:[{
+            label:"Público",
+            data: items.map(x=>x.value),
+            borderRadius:8,
+            backgroundColor:"rgba(255,204,102,.72)"
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          animation:false,
+          indexAxis:"y",
+          plugins:{
+            legend:{ display:false },
+            tooltip:{
+              enabled:true,
+              backgroundColor:"#0b111a",
+              borderColor:"rgba(255,255,255,.10)",
+              borderWidth:1,
+              titleColor:"rgba(255,255,255,.92)",
+              bodyColor:"rgba(255,255,255,.85)",
+              padding:10,
+              callbacks:{
+                label:(ctx)=>` ${fmtInt(ctx.parsed.x)}`
+              }
+            }
+          },
+          scales:{
+            x:{
+              ticks:{
+                color:"rgba(255,255,255,.65)",
+                callback:(v)=> (v>=1000? (v/1000).toFixed(0)+".000" : v)
+              },
+              grid:{ color:"rgba(255,255,255,.06)" },
+              beginAtZero:true
+            },
+            y:{
+              ticks:{ color:"rgba(255,255,255,.80)" },
+              grid:{ display:false }
+            }
+          }
+        }
+      });
+    }
+
+    function createNightChart(canvasId, nightKey, color){
+      const ctx = document.getElementById(canvasId);
+      const items = state.nights[nightKey];
+      return new Chart(ctx,{
+        type:"bar",
+        data:{
+          labels: items.map(x=>x.label),
+          datasets:[{
+            data: items.map(x=>x.value),
+            borderRadius:7,
+            backgroundColor:color
+          }]
+        },
+        options:{
+          ...baseChartOptions(),
+          scales:{
+            x:{
+              ticks:{ color:"rgba(255,255,255,.75)", maxRotation:0, autoSkip:false },
+              grid:{ color:"rgba(255,255,255,.06)" }
+            },
+            y:{
+              ticks:{ color:"rgba(255,255,255,.55)" },
+              grid:{ color:"rgba(255,255,255,.06)" },
+              beginAtZero:true
+            }
+          }
+        }
+      });
+    }
+
+    function createCamModalChart(labels, data){
+      const ctx = document.getElementById("camModalChart");
+      const _labels = Array.isArray(labels) && labels.length ? labels : Array.from({length:30}, (_,i)=>`${i+1}m`);
+      const _data = Array.isArray(data) && data.length ? data : _labels.map(()=>rand(0, 80));
+
+      const opts = baseChartOptions();
+      opts.plugins = Object.assign({}, opts.plugins, { legend:{display:false} });
+      opts.scales = {
+        x:{ ticks:{ color:"rgba(255,255,255,55)", autoSkip:true, maxRotation:0 }, grid:{ color:"rgba(255,255,255,06)" } },
+        y:{ ticks:{ color:"rgba(255,255,255,55)" }, grid:{ color:"rgba(255,255,255,06)" }, beginAtZero:true }
+      };
+
+      return new Chart(ctx,{
+        type:"line",
+        data:{
+          labels:_labels,
+          datasets:[{
+            data:_data,
+            borderColor:"rgba(87,164,255,.92)",
+            backgroundColor:"rgba(87,164,255,.16)",
+            tension:.35,
+            fill:true,
+            pointRadius:0
+          }]
+        },
+        options: opts
+      });
+    }
+
+
+
+    // Dimensão da planta (precisa bater com o viewBox)
+    const MAP_W = 2048;
+    const MAP_H = 1152;
+
+    // Seus setores (16 polígonos). Você pode renomear os ids depois.
+    const HEAT_ZONES = [
+      { id:"Z01", pts:[[1221,551],[1218,422],[1339,311],[1436,402],[1381,455],[1406,480],[1328,551]] },
+      { id:"Z02", pts:[[1331,311],[1212,419],[1132,408],[1165,322],[1248,239]] },
+      { id:"Z03", pts:[[1022,449],[1093,264],[1135,292],[1088,405],[1171,419],[1135,493],[1046,457]] },
+      { id:"Z04", pts:[[1165,142],[1176,187],[1237,242],[1171,311],[1093,258],[1138,134]] },
+      { id:"Z05", pts:[[1060,469],[1221,529],[1207,538],[1140,540],[1129,571],[1041,568]] },
+      { id:"Z06", pts:[[1179,419],[1210,424],[1215,521],[1140,491]] },
+      { id:"Z07", pts:[[905,538],[1038,543],[1030,571],[1121,585],[1118,623],[856,626],[908,574]] },
+      { id:"Z08", pts:[[62,598],[159,585],[308,579],[897,576],[842,632],[322,634],[54,643]] },
+      { id:"Z09", pts:[[1055,469],[1041,538],[908,538],[809,543],[864,391]] },
+      { id:"Z10", pts:[[751,402],[778,358],[856,388],[806,538],[718,482],[632,438],[676,344]] },
+      { id:"Z11", pts:[[541,311],[574,319],[657,372],[626,435],[579,419],[485,405],[444,383],[491,339]] },
+      { id:"Z12", pts:[[577,419],[596,446],[571,491],[480,469],[480,413]] },
+      { id:"Z13", pts:[[308,469],[358,485],[419,452],[472,474],[577,496],[651,524],[574,565],[325,565]] },
+      { id:"Z14", pts:[[306,452],[317,386],[353,410],[430,405],[416,444],[355,482]] },
+      { id:"Z15", pts:[[458,234],[485,228],[510,267],[521,303],[488,339],[438,386],[419,397],[355,402],[319,386],[311,352],[331,303],[375,258],[452,239]] },
+      { id:"Z16", pts:[[361,256],[319,303],[300,347],[311,388],[295,444],[278,397],[264,397],[234,330],[248,289]] },
+      { id:"Z17", pts:[[483,200],[563,167],[588,198],[507,253]] },
+      { id:"Z18", pts:[[1447,408],[1464,399],[1508,444],[1483,466],[1456,441],[1411,474],[1392,452]] },
+      { id:"Z19", pts:[[1472,529],[1519,480],[1530,493],[1585,491],[1621,524]] },
+      { id:"Z20", pts:[[1154,574],[1685,554],[1746,601],[1129,623],[1132,579]] },
+      { id:"Z21", pts:[[1323,203],[1348,184],[1621,444],[1591,466]] }
+    ];
+
+
+
+    function ptsToAttr(pts){
+    return pts.map(p => `${p[0]},${p[1]}`).join(" ");
+    }
+
+    // centróide simples (para label)
+    function polygonCentroid(pts){
+    let x=0,y=0;
+    for (const p of pts){ x+=p[0]; y+=p[1]; }
+    return [x/pts.length, y/pts.length];
+    }
+
+    function fitHeatStage(){
+      const stage = document.getElementById("heatStage");
+      if (!stage) return;
+      stage.setAttribute("transform", "translate(0,0) scale(1)");
+    }
+
+
+
+    function initHeatmap(){
+      const g = document.getElementById("heatPolygons");
+      const gl = document.getElementById("heatLabels");
+      g.innerHTML = "";
+      gl.innerHTML = "";
+
+      for (const z of HEAT_ZONES){
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        poly.setAttribute("id", `poly_${z.id}`);
+        poly.setAttribute("class", "heat-poly");
+        poly.setAttribute("points", ptsToAttr(z.pts));
+        poly.setAttribute("fill", "rgba(0,0,0,0)");
+        g.appendChild(poly);
+
+        // clique na zona (abre pop-up detalhado)
+        poly.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          if (typeof openZoneModal === "function") openZoneModal(z.id);
+        });
+
+
+        const [cx, cy] = polygonCentroid(z.pts);
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("class", "heat-label");
+        t.setAttribute("x", cx);
+        t.setAttribute("y", cy);
+        t.setAttribute("text-anchor", "middle");
+        t.textContent = z.id;
+        gl.appendChild(t);
+      }
+
+      // 1) enquadra (remove a “borda” branca do PNG via zoom no stage)
+      fitHeatStage(); // mantém visão geral (sem zoom automático)
+
+
+      // 2) legenda (se você adicionou ZONE_META + renderZonesLegend)
+      if (typeof renderZonesLegend === "function") renderZonesLegend();
+
+      // 3) aplica as cores iniciais
+      if (typeof updateHeatmap === "function") updateHeatmap();
+    }
+
+
+    window.addEventListener("load", initHeatmap);
+
+
+
+    
+    // ============================================================
+    // ZONAS (Mapa de calor) — Meta + câmeras + histórico (placeholders)
+    // ============================================================
+    window.__dashState = window.__dashState || {
+      selectedZone: null,
+      zoneHistCache: {},
+      cam14Flow: [],          // série minuto-a-minuto (simulada) p/ Z08
+      cam14Avg: null
+    };
+
+    // Mapeamento oficial: zona -> câmeras (pronto p/ substituir por consultas SQL)
+    const ZONE_CAMERAS = {
+      Z01: [1, 2, 3],
+      Z02: [4, 5],
+      Z03: [6, 7],
+      Z04: [8, 9],
+      Z05: [10, 11],
+      Z06: [6],
+      Z07: [12, 13],
+      Z08: [14],
+      Z09: [15, 16],
+      Z10: [17, 18],
+      Z11: [19, 20],
+      Z12: [21, 22],
+      Z13: [23, 24],
+      Z14: [25],
+      Z15: [26, 27, 28, 29],
+      Z16: [30],
+      Z17: [31],
+      Z18: [32],
+      Z19: [33],
+      Z20: [34],
+      Z21: [35],
+    };
+
+    // Metadados (títulos/descrições) usados na legenda e no modal
+    const ZONE_META = {
+      Z01: { title:"Z01 — Arena — Frente do palco principal", desc:"Somatório de câmeras: 1, 2, 3." },
+      Z02: { title:"Z02 — Arena — Intermediário", desc:"Somatório de câmeras: 4, 5." },
+      Z03: { title:"Z03 — Praça de alimentação e arquibancada", desc:"Somatório de câmeras: 6, 7." },
+      Z04: { title:"Z04 — Arena — Fundo", desc:"Somatório de câmeras: 8, 9." },
+      Z05: { title:"Z05 — Polícia Civil / GSM", desc:"Somatório de câmeras: 10, 11." },
+      Z06: { title:"Z06 — Roda gigante", desc:"Somatório de câmeras: 6." },
+      Z07: { title:"Z07 — Acesso arena", desc:"Somatório de câmeras: 12, 13." },
+      Z08: { title:"Z08 — Pista — Entrada orla", desc:"Câmera 14. Regra: últimos 5 min vs média histórica (desta câmera)." },
+      Z09: { title:"Z09 — Área verde — Acesso", desc:"Somatório de câmeras: 15, 16." },
+      Z10: { title:"Z10 — Foodtrucks 1", desc:"Somatório de câmeras: 17, 18." },
+      Z11: { title:"Z11 — Foodtrucks 2", desc:"Somatório de câmeras: 19, 20." },
+      Z12: { title:"Z12 — Palco Brisa", desc:"Somatório de câmeras: 21, 22." },
+      Z13: { title:"Z13 — Área verde — Palco Brisa", desc:"Somatório de câmeras: 23, 24." },
+      Z14: { title:"Z14 — Fundo Palco Brisa", desc:"Somatório de câmeras: 25." },
+      Z15: { title:"Z15 — Área verde — Pista de Skate", desc:"Somatório de câmeras: 26, 27, 28, 29." },
+      Z16: { title:"Z16 — Entrada 2 avenida", desc:"Somatório de câmeras: 30." },
+      Z17: { title:"Z17 — Zona morta", desc:"Somatório de câmeras: 31." },
+      Z18: { title:"Z18 — Camarote — Frente do palco principal", desc:"Somatório de câmeras: 32." },
+      Z19: { title:"Z19 — Backstage", desc:"Somatório de câmeras: 33." },
+      Z20: { title:"Z20 — Saída (SSP)", desc:"Somatório de câmeras: 34. (SSP)" },
+      Z21: { title:"Z21 — Acesso Camarote (SSP)", desc:"Somatório de câmeras: 35. (SSP)" },
+    };
+
+    function renderZonesLegend(){
+      const el = document.getElementById("zonesLegend");
+      if (!el) return;
+
+      el.innerHTML = HEAT_ZONES.map(z=>{
+        const m = ZONE_META[z.id] || { title:`${z.id}`, desc:"" };
+        return `
+          <div class="zone-item">
+            <div class="zone-badge">${z.id}</div>
+            <div class="zone-meta">
+              <div class="t">${m.title}</div>
+              <div>${m.desc}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // Valores instantâneos por zona (usados para cor do mapa)
+    const heatValues = Object.fromEntries(Object.keys(ZONE_CAMERAS).map(zid=>[zid, 0]));
+
+    // Período solicitado (placeholders): 12/05/2025 até 31/05/2025
+    const ZONE_PERIOD_START = new Date(2025, 4, 12); // 12/05/2025
+    const ZONE_PERIOD_END   = new Date(2025, 4, 31); // 31/05/2025
+
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function fmtBR(d){ return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`; }
+    function fmtBRFull(d){ return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`; }
+
+    function dateRange(start, end){
+      const out=[];
+      const d = new Date(start.getTime());
+      d.setHours(0,0,0,0);
+      const e = new Date(end.getTime());
+      e.setHours(0,0,0,0);
+      while(d<=e){
+        out.push(new Date(d.getTime()));
+        d.setDate(d.getDate()+1);
+      }
+      return out;
+    }
+
+    // RNG determinístico (para manter o demo estável entre refresh)
+    function seededRand(seedStr){
+      let h = 2166136261;
+      for(let i=0;i<seedStr.length;i++){ h ^= seedStr.charCodeAt(i); h = Math.imul(h, 16777619); }
+      return function(){
+        // xorshift
+        h ^= h << 13; h ^= h >>> 17; h ^= h << 5;
+        return ((h >>> 0) / 4294967295);
+      };
+    }
+
+    function getZoneHistory(zid){
+      if(window.__dashState.zoneHistCache[zid]) return window.__dashState.zoneHistCache[zid];
+
+      const days = dateRange(ZONE_PERIOD_START, ZONE_PERIOD_END);
+      const rnd = seededRand("ZONE_"+zid+"_2025");
+
+      // Perfil de volume por zona (apenas para demo visual; substituir por SQL)
+      const profile = {
+        hi: ["Z01","Z02","Z04","Z18"],
+        mid: ["Z03","Z07","Z08","Z12","Z20","Z21"],
+        lo: ["Z05","Z06","Z09","Z10","Z11","Z13","Z14","Z15","Z16","Z17","Z19"]
+      };
+      const band = profile.hi.includes(zid) ? [18000, 46000]
+                 : profile.mid.includes(zid) ? [9000, 26000]
+                 : [2500, 12000];
+
+      const rows = days.map((d, i)=>{
+        // leve tendência + sazonalidade
+        const t = i/(days.length-1 || 1);
+        const seasonal = 0.78 + 0.44*Math.sin((i/3.2)+rnd()*0.9);
+        const base = band[0] + (band[1]-band[0])*(0.25 + 0.55*t);
+        let total = Math.round(base * seasonal * (0.85 + rnd()*0.35));
+
+        // Ajuste especial p/ Z08 (fluxo) — fica mais “nervoso”
+        if(zid==="Z08") total = Math.round(total * (0.75 + rnd()*0.70));
+
+        // Split por período (manhã/tarde/noite)
+        const pM = 0.22 + rnd()*0.10;
+        const pT = 0.28 + rnd()*0.10;
+        const pN = Math.max(0.40, 1 - (pM+pT));
+        const m = Math.round(total * pM);
+        const t2 = Math.round(total * pT);
+        const n = Math.max(0, total - (m+t2));
+
+        return {
+          date: d,
+          total,
+          morning: m,
+          afternoon: t2,
+          night: n
+        };
+      });
+
+      window.__dashState.zoneHistCache[zid] = rows;
+      return rows;
+    }
+
+    // Cor do mapa (frio -> quente)
+    const HEAT_T1 = 12000;   // início de atenção
+    const HEAT_T2 = 22000;   // alto
+    const HEAT_T3 = 35000;   // crítico
+
+    function heatColor(v){
+      if (v >= HEAT_T3) return "rgba(145, 0, 55, 0.55)";     // vinho
+      if (v >= HEAT_T2) return "rgba(255, 70, 120, 0.48)";   // vermelho
+      if (v >= HEAT_T1) return "rgba(255, 170, 0, 0.42)";    // laranja
+      if (v > 0)        return "rgba(87, 164, 255, 0.22)";   // azul frio
+      return "rgba(0,0,0,0)";
+    }
+
+    function updateZoneHeatValues(){
+      // Base: usa o último dia do período como “referência”, + ruído minuto-a-minuto
+      for(const zid of Object.keys(ZONE_CAMERAS)){
+        const hist = getZoneHistory(zid);
+        const base = hist[hist.length-1]?.total || 0;
+
+        // ruído suave
+        const v = Math.max(0, Math.round(base * (0.86 + Math.random()*0.28)));
+
+        // Z08: regra de fluxo (últimos 5 min vs média)
+        if(zid==="Z08"){
+          // simula fluxo da câmera 14 (por minuto)
+          const flow = Math.round(420 + Math.random()*860); // pessoas/min (placeholder)
+          const series = window.__dashState.cam14Flow;
+          series.push(flow);
+          while(series.length > 90) series.shift();
+
+          const avg = series.reduce((a,b)=>a+b,0) / (series.length || 1);
+          const last5 = series.slice(-5).reduce((a,b)=>a+b,0) / (Math.min(5, series.length) || 1);
+
+          window.__dashState.cam14Avg = avg;
+
+          // se últimos 5 min > média => quente
+          const hot = last5 > (avg * 1.12);
+          // transforma em “valor” para cor (hot => puxa para cima)
+          heatValues[zid] = hot ? Math.round(HEAT_T2 + (last5*18)) : Math.round(HEAT_T1 * 0.65 + (last5*10));
+          heatValues[zid] = clamp(heatValues[zid], 0, 65000);
+        } else {
+          heatValues[zid] = clamp(v, 0, 65000);
+        }
+      }
+    }
+
+    function applySelectedZoneStyles(zid){
+      // SVG
+      document.querySelectorAll(".heat-poly").forEach(p=>p.classList.remove("active"));
+      const poly = document.getElementById(`poly_${zid}`);
+      if(poly) poly.classList.add("active");
+
+      // Legend
+      const legend = document.getElementById("zonesLegend");
+      if(legend){
+        legend.querySelectorAll(".zone-item").forEach(i=>i.classList.remove("active"));
+        const it = legend.querySelector(`[data-zone="${zid}"]`);
+        if(it) it.classList.add("active");
+      }
+    }
+
+    function ensureZoneModalCharts(){
+      if(charts.zoneDaily && charts.zonePeriods) return;
+
+      // Daily line
+      const ctxD = document.getElementById("zoneChartDaily");
+      charts.zoneDaily = new Chart(ctxD, {
+        type:"line",
+        data:{ labels:[], datasets:[{ data:[], borderColor:"rgba(87,164,255,1)", backgroundColor:"rgba(87,164,255,.12)", tension:.35, fill:false, pointRadius:0 }] },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false}, tooltip:{enabled:true} },
+          scales:{
+            x:{ ticks:{ color:"rgba(255,255,255,.55)", maxRotation:0, autoSkip:true }, grid:{ color:"rgba(255,255,255,.06)" } },
+            y:{ ticks:{ color:"rgba(255,255,255,.55)" }, grid:{ color:"rgba(255,255,255,.06)" } }
+          }
+        }
+      });
+
+      // Periods bar
+      const ctxP = document.getElementById("zoneChartPeriods");
+      charts.zonePeriods = new Chart(ctxP, {
+        type:"bar",
+        data:{ labels:["Manhã","Tarde","Noite"], datasets:[{ data:[0,0,0], backgroundColor:["rgba(87,164,255,.35)","rgba(255,170,0,.35)","rgba(255,70,120,.35)"], borderColor:"rgba(255,255,255,.12)", borderWidth:1, borderRadius:10 }] },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false}, tooltip:{enabled:true} },
+          scales:{
+            x:{ ticks:{ color:"rgba(255,255,255,.55)" }, grid:{ display:false } },
+            y:{ ticks:{ color:"rgba(255,255,255,.55)" }, grid:{ color:"rgba(255,255,255,.06)" } }
+          }
+        }
+      });
+    }
+
+    function openZoneModal(zid){
+      const meta = ZONE_META[zid] || { title:zid, desc:"" };
+      window.__dashState.selectedZone = zid;
+
+      applySelectedZoneStyles(zid);
+
+      // Cabeçalho
+      document.getElementById("zoneModalTitle").textContent = meta.title;
+      document.getElementById("zoneModalSub").textContent = meta.desc;
+
+      // Dados
+      const rows = getZoneHistory(zid);
+      const labels = rows.map(r=>fmtBR(r.date));
+      const totals = rows.map(r=>r.total);
+
+      const totalPeriod = totals.reduce((a,b)=>a+b,0);
+      const avgDay = Math.round(totalPeriod / (totals.length || 1));
+      let peak = -1, peakIdx = 0;
+      totals.forEach((v,i)=>{ if(v>peak){ peak=v; peakIdx=i; } });
+
+      const sumMorning = rows.reduce((a,r)=>a+r.morning,0);
+      const sumAfternoon = rows.reduce((a,r)=>a+r.afternoon,0);
+      const sumNight = rows.reduce((a,r)=>a+r.night,0);
+
+      // KPIs
+      document.getElementById("zoneKpiTotal").textContent = totalPeriod.toLocaleString("pt-BR");
+      document.getElementById("zoneKpiAvg").textContent = avgDay.toLocaleString("pt-BR");
+      document.getElementById("zoneKpiPeak").textContent = peak.toLocaleString("pt-BR");
+      document.getElementById("zoneKpiPeakSub").textContent = `Dia: ${labels[peakIdx]} (${fmtBRFull(rows[peakIdx].date)})`;
+
+      // Status (especial Z08)
+      let status = "NORMAL";
+      if(zid==="Z08"){
+        const series = window.__dashState.cam14Flow;
+        const avg = window.__dashState.cam14Avg || 0;
+        const last5 = series.slice(-5).reduce((a,b)=>a+b,0) / (Math.min(5, series.length) || 1);
+        status = (last5 > avg*1.12) ? "QUENTE" : "FRIO";
+      } else {
+        status = (heatValues[zid] >= HEAT_T2) ? "QUENTE" : (heatValues[zid] >= HEAT_T1 ? "ATENÇÃO" : "NORMAL");
+      }
+      document.getElementById("zoneKpiStatus").textContent = status;
+
+      // Charts
+      ensureZoneModalCharts();
+      charts.zoneDaily.data.labels = labels;
+      charts.zoneDaily.data.datasets[0].data = totals;
+      charts.zoneDaily.update("none");
+
+      charts.zonePeriods.data.datasets[0].data = [sumMorning, sumAfternoon, sumNight];
+      charts.zonePeriods.update("none");
+
+      // Table
+      const tbody = document.querySelector("#zoneTable tbody");
+      tbody.innerHTML = rows.map(r=>`
+        <tr>
+          <td>${fmtBRFull(r.date)}</td>
+          <td class="mono">${r.total.toLocaleString("pt-BR")}</td>
+          <td class="mono">${r.morning.toLocaleString("pt-BR")}</td>
+          <td class="mono">${r.afternoon.toLocaleString("pt-BR")}</td>
+          <td class="mono">${r.night.toLocaleString("pt-BR")}</td>
+        </tr>
+      `).join("");
+
+      openModal("modalZone");
+    }
+function updateHeatmap(){
+      for(const z of HEAT_ZONES){
+        const v = heatValues[z.id] || 0;
+        const poly = document.getElementById(`poly_${z.id}`);
+        if(!poly) continue;
+
+        const fill = heatColor(v);
+        poly.setAttribute("fill", fill);
+        poly.setAttribute("data-value", String(v));
+
+        // swatch na legenda
+        const sw = document.getElementById(`swatch_${z.id}`);
+        if(sw){
+          sw.style.background = (v>0) ? fill.replace(/,\s*0\.\d+\)$/, ", 0.85)") : "rgba(255,255,255,0.10)";
+        }
+      }
+    }
+
+function initCharts(){
+      // Sparklines
+      charts.sp_now    = createSpark("sp_now",    "rgba(87,164,255,1)");
+      charts.sp_peak   = createSpark("sp_peak",   "rgba(40,226,165,1)");
+      charts.sp_total  = createSpark("sp_total",  "rgba(255,204,102,1)");
+      charts.sp_alerts = createSpark("sp_alerts", "rgba(255,92,122,1)");
+      charts.sp_status = createSpark("sp_status", "rgba(46,229,157,1)");
+
+      // Compact all bands + full (deferred creation when modal opens, but we can create now safely)
+      charts.allBandsCompact = createAllBandsCompact();
+      // Full chart is created on first open, to avoid heavy initial
+      charts.allBandsFull = null;
+
+      // Big ranking
+      charts.bigRanking = createBigRanking();
+
+      // Night charts (5)
+      charts.night27 = createNightChart("night_27", "27/12", "rgba(176,107,255,.78)");
+      charts.night28 = createNightChart("night_28", "28/12", "rgba(227,107,107,.78)");
+      charts.night29 = createNightChart("night_29", "29/12", "rgba(107,155,255,.78)");
+      charts.night30 = createNightChart("night_30", "30/12", "rgba(255,204,102,.72)");
+      charts.night31 = createNightChart("night_31", "31/12", "rgba(46,229,157,.72)");
+    }
+
+    function updateSpark(chart, next){
+      const d = chart.data.datasets[0].data;
+      d.push(next);
+      d.shift();
+      chart.update("none");
+    }
+
+    function updateBarData(chart, labels, data){
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = data;
+      chart.update("none");
+    }
+
+    /* ============================================================
+       DYNAMIC TICK (simulate minute refresh)
+       ============================================================ */
+    async function tick(){
+  // Backend mode: se autenticado, puxa dados reais e renderiza sem simulação.
+  if (BACKEND.enabled && BACKEND.token) {
+    try { await pullBackend(); } catch (e) { /* login overlay já trata */ }
+    renderKpis();
+    renderAlerts();
+    renderTopCams();
+    updateHeatmap();
+    // mantém gráfico e UI como estão (dados por banda continuam no dataset local por enquanto).
+    return;
+  }
+
+      // time
+      const d = new Date();
+      document.getElementById("clock").textContent = d.toLocaleTimeString("pt-BR");
+      document.getElementById("anchorTs").textContent = nowISOAnchor();
+
+      // MAPA DE CALOR
+      updateZoneHeatValues();
+      updateHeatmap();
+
+      // KPI drift
+      const drift = () => (Math.random()<.5?-1:1) * rand(200, 1400);
+      state.kpis.now = clamp(state.kpis.now + drift(), 85000, 220000);
+      state.kpis.peakNight = Math.max(state.kpis.peakNight, state.kpis.now + rand(6000, 22000));
+      state.kpis.total = state.kpis.total + rand(3500, 12000);
+      state.kpis.alertsActive = clamp(state.kpis.alertsActive + (Math.random()<.25?(Math.random()<.5?-1:1):0), 0, 7);
+      state.kpis.status = (state.kpis.alertsActive >= 5) ? "ATENÇÃO" : "OK";
+
+      // Smart indicators drift
+      state.smart.pressureZone = pick(state.zones);
+      const zcam = rand(1,40);
+      state.smart.zeroCam = `Câmera ${zcam}`;
+      state.smart.accel3m = clamp(state.smart.accel3m + (Math.random()<.5?-1:1)*rand(2,8), 8, 85);
+      state.smart.dropAfterPeak = clamp(state.smart.dropAfterPeak + (Math.random()<.5?-1:1)*rand(2,9), 10, 85);
+
+      // Update top cams quick drift
+      state.topCams15 = state.topCams15.map(r=>({
+        ...r,
+        in: clamp(r.in + rand(-5, 18), 0, 220),
+        out: clamp(r.out + rand(-3, 10), 0, 120),
+        alerts: clamp(r.alerts + (Math.random()<.2?(Math.random()<.5?-1:1):0), 0, 6)
+      })).sort((a,b)=>b.in-a.in).slice(0,4);
+
+      // alerts slight changes
+      if(Math.random()<.35){
+        const candidates = [
+          { msg:`Aceleração incomum em ${pick(state.zones)} (+${rand(25,65)}% em 10 min).`, meta:`${pick(["cam_Elevador_1","cam_Pelourinho_2","cam_Mercado_3","cam_Orla_4"])} · ${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}`, level:"WARN" },
+          { msg:`Inconsistência OUT/IN abaixo do histórico (possível subcontagem de saída).`, meta:`${pick(state.zones)} · ${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}`, level:"BAD" },
+          { msg:`Câmera com variação zero por > 2 min (verificar stream).`, meta:`Câmera ${rand(1,40)} · ${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}`, level:"WARN" }
+        ];
+        const add = pick(candidates);
+        // keep last 5
+        state.alerts = [add, ...state.alerts].slice(0,5);
+      }
+
+      // Cameras drift
+      state.camsSaltur = state.camsSaltur.map(c=>{
+        const online = (c.status==="ON");
+        const step = online ? rand(-20, 55) : rand(-5, 6);
+        const nowVal = clamp(c.now + step, 0, 850);
+        return {
+          ...c,
+          now: nowVal,
+          peakNight: Math.max(c.peakNight, nowVal + rand(0, 120)),
+          peakAll: Math.max(c.peakAll, nowVal + rand(100, 260)),
+          alerts: clamp(c.alerts + (Math.random()<.10 ? (Math.random()<.5?-1:1) : 0), 0, 7)
+        };
+      });
+
+
+
+      // Bands drift (simulate changes)
+      state.allBands = state.allBands.map(b=>{
+        const delta = rand(-1800, 4200);
+        return { ...b, value: Math.max(10000, b.value + delta) };
+      });
+      rebuildRankingTop10();
+
+      // Nights drift
+      for(const k of Object.keys(state.nights)){
+        state.nights[k] = state.nights[k].map(x=>{
+          const delta = rand(-1200, 2600);
+          return { ...x, value: Math.max(8000, x.value + delta) };
+        });
+      }
+      rebuildSSPSectors();
+
+      // Render DOM
+      renderKPIs();
+      renderAlerts();
+      renderTopCams();
+      renderCameras();
+
+      // Update charts
+      updateSpark(charts.sp_now, clamp(rand(45,120) + (state.kpis.now/4000), 30, 180));
+      updateSpark(charts.sp_peak, clamp(rand(55,130) + (state.kpis.peakNight/5000), 40, 190));
+      updateSpark(charts.sp_total, clamp(rand(60,140) + (state.kpis.total/80000), 50, 180));
+      updateSpark(charts.sp_alerts, clamp(state.kpis.alertsActive*20 + rand(0,10), 0, 160));
+      updateSpark(charts.sp_status, state.kpis.status==="OK" ? rand(95,120) : rand(40,75));
+
+      const items = [...getSelectedAllBands()];
+updateBarData(
+        charts.allBandsCompact,
+        items.map(x=>x.label),
+        items.map(x=>x.value)
+        );
+
+        // IMPORTANTÍSSIMO: atualizar as cores junto com labels/data
+        charts.allBandsCompact.data.datasets[0].backgroundColor = barColorsFromLabels(items.map(x=>x.label));
+charts.allBandsCompact.update("none");
+
+
+      // big ranking top10
+      const top10 = state.rankingTop10;
+      updateBarData(charts.bigRanking, top10.map(x=>x.label), top10.map(x=>x.value));
+
+      // night charts
+      updateBarData(charts.night27, state.nights["27/12"].map(x=>x.label), state.nights["27/12"].map(x=>x.value));
+      updateBarData(charts.night28, state.nights["28/12"].map(x=>x.label), state.nights["28/12"].map(x=>x.value));
+      updateBarData(charts.night29, state.nights["29/12"].map(x=>x.label), state.nights["29/12"].map(x=>x.value));
+      updateBarData(charts.night30, state.nights["30/12"].map(x=>x.label), state.nights["30/12"].map(x=>x.value));
+      updateBarData(charts.night31, state.nights["31/12"].map(x=>x.label), state.nights["31/12"].map(x=>x.value));
+
+      // If full modal chart exists, update too
+      if(charts.allBandsFull){
+        const items = [...state.allBands];
+        updateBarData(charts.allBandsFull, items.map(x=>x.label), items.map(x=>x.value));
+      }
+    }
+
+    /* ============================================================
+       MODALS
+       ============================================================ */
+    function openModal(id){
+      document.getElementById(id).classList.add("open");
+    }
+    function closeModal(id){
+      document.getElementById(id).classList.remove("open");
+    }
+
+    
+function getSSPHistoryFor(camId){
+  // Mapeia os cards-setores (SSP) para colunas do XLS
+  const MAP = {
+    "SSP_IN_ORLA": { label: "Entradas Orla (SSP 1 + SSP 2)", col: "IN_ORLA", valueLabel: "Passantes (IN Orla)" },
+    "SSP_IN_AVENIDA": { label: "Entradas Avenida (SSP 3 + SSP 4 + SSP 5)", col: "IN_AVENIDA", valueLabel: "Passantes (IN Avenida)" },
+    "SSP_OUT": { label: "Saídas (SSP 8)", col: "OUT", valueLabel: "Passantes (OUT)" }
+  };
+
+  if(camId === "SSP_IN_CAMAROTE"){
+    return { label:"Entradas Camarote (SSP 6 + SSP 7)", rows:[], valueLabel:"Passantes (IN Camarote)", note:"Sem histórico no XLS para Camarote. Este card fica preenchido manualmente no código (snapshot)." };
+  }
+
+  const meta = MAP[camId] || { label: camId, col: null, valueLabel: "Passantes" };
+  if(!meta.col){
+    return { label: meta.label, rows:[], valueLabel: meta.valueLabel, note:"Card não mapeado para coluna do XLS." };
+  }
+
+  const rows = (Array.isArray(XLS_DIA27) ? XLS_DIA27 : [])
+    .filter(r=>r && r.Hora!=null)
+    .map(r=>({
+      t: String(r.Hora),
+      v: Number(r[meta.col] ?? 0)
+    }));
+
+  return { label: meta.label, rows, valueLabel: meta.valueLabel };
+}
+
+function renderHistoryTable(container, rows, valueLabel){
+  const safe = (v)=>String(v==null ? "" : v);
+  const head = valueLabel || "Valor";
+  const body = rows.map(r=>`
+    <tr>
+      <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); color:rgba(255,255,255,.72); white-space:nowrap;">${safe(r.t)}</td>
+      <td style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); text-align:right; font-weight:800;">${Number.isFinite(r.v)? Math.round(r.v): "--"}</td>
+    </tr>
+  `).join("");
+
+  container.innerHTML = `
+    <div style="max-height:240px; overflow:auto; border:1px solid rgba(255,255,255,.08); border-radius:12px;">
+      <table style="width:100%; border-collapse:collapse; font-size:12px;">
+        <thead>
+          <tr>
+            <th style="position:sticky; top:0; background:rgba(10,12,18,.92); backdrop-filter: blur(6px); padding:9px 10px; text-align:left; color:rgba(255,255,255,.65); border-bottom:1px solid rgba(255,255,255,.08);">Hora</th>
+            <th style="position:sticky; top:0; background:rgba(10,12,18,.92); backdrop-filter: blur(6px); padding:9px 10px; text-align:right; color:rgba(255,255,255,.65); border-bottom:1px solid rgba(255,255,255,.08);">${head}</th>
+          </tr>
+        </thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function wireModals(){
+      document.getElementById("openBandsModal").addEventListener("click", ()=>{
+        openModal("modalBands");
+        applyBandsEventTitle();
+        // create full chart if first time
+        if(!charts.allBandsFull){
+          charts.allBandsFull = createAllBandsFull();
+        }
+        // garante que compact/full reflitam o filtro atual
+        updateAllBandsCharts();
+      });
+
+      document.getElementById("openAlertsModal").addEventListener("click", ()=>{
+        openModal("modalAlerts");
+      });
+
+      document.querySelectorAll(".modal").forEach(m=>{
+        m.addEventListener("click", (e)=>{
+          if(e.target === m){
+            m.classList.remove("open");
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-close]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          closeModal(btn.getAttribute("data-close"));
+        });
+      });
+
+      // Camera details (delegation)
+      document.addEventListener("click", (e)=>{
+        const btn = e.target.closest("[data-cam]");
+        if(!btn) return;
+        const camId = btn.getAttribute("data-cam");
+        const isSSP = btn.getAttribute("data-isssp")==="1";
+        const cam = isSSP ? state.camsSSP.find(c=>c.id===camId) : state.camsSaltur.find(c=>c.id===camId);
+        if(!cam) return;
+
+        document.getElementById("camModalTitle").textContent = `Detalhes — ${cam.name} (${camId})`;
+        document.getElementById("camModalStatus").textContent = cam.status;
+        document.getElementById("camModalStatus").style.color = cam.status==="ON" ? "var(--good)" : "var(--bad)";
+        document.getElementById("camModalNow").textContent = isSSP ? cam.passantes : cam.now;
+        document.getElementById("camModalPeakNight").textContent = cam.peakNight;
+        document.getElementById("camModalPeakAll").textContent = cam.peakAll;
+
+        // Alerts list for camera (mock)
+        const list = document.getElementById("camModalAlerts");
+        list.innerHTML = "";
+        const n = rand(0,3);
+        if(n===0){
+          list.innerHTML = `<div class="alert-item"><div class="txt"><div class="msg">Sem alertas relevantes no momento.</div><div class="meta">Operação dentro do padrão.</div></div><div class="pill-state warn">OK</div></div>`;
+        } else {
+          const items = Array.from({length:n}).map(()=>({
+            msg: pick([
+              "Oscilação incomum (pico repentino) — verificar fluxo local.",
+              "Latência acima do padrão (rodada atrasada).",
+              "OUT abaixo do esperado vs baseline (possível subcontagem)."
+            ]),
+            meta: `${pick(["janela 10 min","janela 20 min","janela 3 min"])} · ${new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}`,
+            level: (Math.random()<.35)?"BAD":"WARN"
+          }));
+          items.forEach(a=>{
+            list.innerHTML += `
+              <div class="alert-item">
+                <div class="txt">
+                  <div class="msg">${a.msg}</div>
+                  <div class="meta">${a.meta}</div>
+                </div>
+                <div class="pill-state ${a.level==="BAD"?"bad":"warn"}">${a.level}</div>
+              </div>
+            `;
+          });
+        }
+
+// Histórico: SSP usa XLS_DIA27 (completo); outras câmeras seguem mock por enquanto
+let histLabels = null;
+let histData = null;
+const histTitleEl = document.getElementById("camModalHistTitle");
+const histBox = document.getElementById("camModalHistory");
+
+if(isSSP){
+  const h = getSSPHistoryFor(camId);
+  if(histTitleEl) histTitleEl.textContent = `Histórico completo — ${h.label}`;
+  if(histBox){
+    if(h.rows && h.rows.length){
+      renderHistoryTable(histBox, h.rows, h.valueLabel);
+      histLabels = h.rows.map(r=>r.t);
+      histData = h.rows.map(r=>r.v);
+    } else {
+      histBox.innerHTML = `<div class="hint">${h.note || "Sem histórico disponível no XLS para este card."}</div>`;
+    }
+  }
+} else {
+  if(histTitleEl) histTitleEl.textContent = "Histórico (mock — últimos 30 min)";
+  if(histBox) histBox.innerHTML = `<div class="hint">Este detalhe ainda está em mock. No backend, este bloco vira uma série real (SQL).</div>`;
+}
+
+openModal("modalCam");
+
+        // chart
+        if(charts.camModal){
+          charts.camModal.destroy();
+          charts.camModal = null;
+        }
+        charts.camModal = createCamModalChart(histLabels, histData);
+      });
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+    function start(){
+      initCameras();
+      rebuildRankingTop10();
+
+      renderKPIs();
+      renderAlerts();
+      renderTopCams();
+      renderCameras();
+
+      initCharts();
+      applyBandsEventTitle();
+      wireBandsFilter();
+      wireModals();
+
+      // initial timestamps
+      document.getElementById("clock").textContent = new Date().toLocaleTimeString("pt-BR");
+      document.getElementById("anchorTs").textContent = nowISOAnchor();
+
+      // Tick each minute
+      setInterval(()=>tick(), 60000);
+
+      // Optional: animate first 3 seconds quickly to "show life"
+      let burst = 0;
+      const burstTimer = setInterval(()=>{
+        tick();
+        burst++;
+        if(burst>=3) clearInterval(burstTimer);
+      }, 1100);
+    }
+
+    start();
+  </script>
+
+<!-- AUTH OVERLAY (backend mode) -->
+<div id="authOverlay" class="modal-backdrop" style="display:none; align-items:center; justify-content:center;">
+  <div class="modal" style="max-width:520px; width:92%; display:block;">
+    <div class="modal-h">
+      <div>
+        <div class="modal-title">Acesso restrito</div>
+        <div class="modal-sub">Entre com seu usuário para carregar dados reais do banco.</div>
+      </div>
+      <button class="icon-btn" id="authCloseBtn" title="Fechar">✕</button>
+    </div>
+    <div class="modal-b">
+      <form id="authForm" autocomplete="on">
+        <div class="grid" style="grid-template-columns:1fr; gap:10px;">
+          <label class="field" style="display:block;">
+            <div class="lbl">Usuário</div>
+            <input id="authUser" class="input" type="text" name="username" placeholder="ex.: admin" required />
+          </label>
+          <label class="field" style="display:block;">
+            <div class="lbl">Senha</div>
+            <input id="authPass" class="input" type="password" name="password" placeholder="••••••••" required />
+          </label>
+        </div>
+        <div id="authErr" class="muted" style="margin-top:10px; display:none; color:#ff7b7b;">Falha no login.</div>
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px;">
+          <button type="button" class="btn ghost" id="authDemoBtn">Entrar (modo demo)</button>
+          <button type="submit" class="btn">Entrar</button>
+        </div>
+      </form>
+      <div class="muted" style="margin-top:12px; font-size:12px;">
+        Dica: quando autenticado, o dashboard passa a puxar alertas, KPIs, Top câmeras e calor por zona via API.
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
