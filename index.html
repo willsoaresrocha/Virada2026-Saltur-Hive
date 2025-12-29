@@ -706,6 +706,10 @@
       .cameras-grid{ grid-template-columns:repeat(3, minmax(200px, 1fr)); }
     }
 
+    .heat-poly {
+      mix-blend-mode: multiply;
+    }
+
 
     
     /* ===== SSP MODE: esconder blocos não usados ===== */
@@ -1372,7 +1376,7 @@ async function pullBackend() {
             { label: "Tony Salles", value: 49184 }
         ],
         "29/12": [
-            { label: "Durval Lélys", value: 11357 },
+            { label: "Durval Lélys", value: 24132 },
             { label: "Nattan", value: 0 },
             { label: "Natanzinho Lima", value: 0 },
             { label: "Matheus e Kauan", value: 0 },
@@ -1396,13 +1400,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento moderado (+24% em 30 min).", meta:"ENTRADA AVENIDA · 20:00", level:"WARN" },
-        { msg:"Movimento moderado (+24% em 30 min).", meta:"ENTRADA ORLA 2 · 20:00", level:"WARN" },
-        { msg:"Movimento baixo (+5% em 30 min).", meta:"SAÍDA · 20:00", level:"WARN" }
+        { msg:"Movimento moderado (+34% em 30 min).", meta:"ENTRADA AVENIDA · 20:30", level:"WARN" },
+        { msg:"Movimento moderado (+29% em 30 min).", meta:"ENTRADA ORLA 2 · 20:30", level:"WARN" },
+        { msg:"Movimento baixo (+6% em 30 min).", meta:"SAÍDA · 20:30", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:14764, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:7382, out:0, alerts:0 }
+        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:16088, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:8044, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1903,10 +1907,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 22146
-      document.getElementById("k_peak").textContent = 22146
-      document.getElementById("k_total").textContent = 22146
-      document.getElementById("k_alerts").textContent = 241.365     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 24132
+      document.getElementById("k_peak").textContent = 24132
+      document.getElementById("k_total").textContent = 24132
+      document.getElementById("k_alerts").textContent = 243.351     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -2641,12 +2645,14 @@ async function pullBackend() {
     const HEAT_T3 = 35000;   // crítico
 
     function heatColor(v){
-      if (v >= HEAT_T3) return "rgba(145, 0, 55, 0.55)";     // vinho
-      if (v >= HEAT_T2) return "rgba(255, 70, 120, 0.48)";   // vermelho
-      if (v >= HEAT_T1) return "rgba(255, 170, 0, 0.42)";    // laranja
-      if (v > 0)        return "rgba(135, 206, 235, 0.80)";   // azul frio
+      if (v >= HEAT_T3) return "rgba(110, 0, 20, 0.70)";   // vinho (mais “vinho” mesmo)
+      if (v >= HEAT_T2) return "rgba(230, 0, 0, 0.62)";    // vermelho
+      if (v >= HEAT_T1) return "rgba(255, 140, 0, 0.50)";  // laranja
+      if (v > 0)        return "rgba(135, 206, 235, 0.35)";// azul frio (menos “tinta”)
       return "rgba(0,0,0,0)";
     }
+
+
 
 
     // ============================================================
