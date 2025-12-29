@@ -1369,7 +1369,7 @@ async function pullBackend() {
             { label: "Claudia Leitte", value: 83761 },
             { label: "Simone Mendes", value: 89147 },
             { label: "Pablo", value: 79357 },
-            { label: "Tony Salles", value: 0 }
+            { label: "Tony Salles", value: 49184 }
         ],
         "29/12": [
             { label: "Durval Lélys", value: 0 },
@@ -1396,13 +1396,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento extremamente intenso (+87% em 30 min).", meta:"ENTRADA AVENIDA · 20:00", level:"BAD" },
-        { msg:"Movimento semi intenso (+57% em 30 min).", meta:"ENTRADA ORLA 2 · 20:00", level:"WARN" },
-        { msg:"Áreas livres (+0% em 10 min).", meta:"SAÍDA · 19:00", level:"WARN" }
+        { msg:"Áreas livres (+0% em 10 min).", meta:"ENTRADA AVENIDA · 06:00", level:"WARN" },
+        { msg:"Áreas livres (+0% em 10 min).", meta:"ENTRADA ORLA 2 · 06:00", level:"WARN" },
+        { msg:"Áreas livres (+0% em 10 min).", meta:"SAÍDA · 06:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Orla — Acesso", in:21317, out:0, alerts:1 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:10658, out:0, alerts:1 }
+        { cam:"ENTRADA AVENIDA", local:"Orla — Acesso", in:0, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:0, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1791,7 +1791,7 @@ async function pullBackend() {
           id: "SSP_IN_ORLA",
           name: "Entradas Orla (SSP 1 + SSP 2)",
           status: "ON",
-          passantes: 10658,
+          passantes: 0,
           peakNight: a.maxs.IN_ORLA,
           
           alerts: 0
@@ -1800,7 +1800,7 @@ async function pullBackend() {
           id: "SSP_IN_AVENIDA",
           name: "Entradas Avenida (SSP 3 + SSP 4 + SSP 5)",
           status: "ON",
-          passantes: 21317,
+          passantes: 0,
           peakNight: a.maxs.IN_AVENIDA,
           
           alerts: 0
@@ -1809,7 +1809,7 @@ async function pullBackend() {
           id: "SSP_IN_CAMAROTE",
           name: "Entradas Camarote (SSP 6 + SSP 7)",
           status: "ON",
-          passantes: 2325,     // manual
+          passantes: 0,     // manual
           peakNight: inCamarote,
           
           alerts: 0
@@ -1818,7 +1818,7 @@ async function pullBackend() {
           id: "SSP_OUT",
           name: "Saídas (SSP 8)",
           status: "ON",
-          passantes: 1071,
+          passantes: 0,
           peakNight: a.maxs.OUT,
           
           alerts: 0
@@ -1903,9 +1903,9 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 49.184
-      document.getElementById("k_peak").textContent = 101.159
-      document.getElementById("k_total").textContent = 94.074
+      document.getElementById("k_now").textContent = 0
+      document.getElementById("k_peak").textContent = 0
+      document.getElementById("k_total").textContent = 0
       document.getElementById("k_alerts").textContent = 219.219     //27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
