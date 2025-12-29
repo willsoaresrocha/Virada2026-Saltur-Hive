@@ -1901,10 +1901,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 89.147
-      document.getElementById("k_peak").textContent = 96.123
-      document.getElementById("k_total").textContent = 89.147
-      document.getElementById("k_alerts").textContent = 214.183     //27/12 = 118.060
+      document.getElementById("k_now").textContent = 94.074
+      document.getElementById("k_peak").textContent = 101.159
+      document.getElementById("k_total").textContent = 94.074
+      document.getElementById("k_alerts").textContent = 219.219     //27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -2442,54 +2442,54 @@ async function pullBackend() {
     };
 
     // Mapeamento oficial: zona -> câmeras (pronto p/ substituir por consultas SQL)
-    const ZONE_CAMERAS = {
-      Z01: [1, 2, 3],
-      Z02: [4, 5],
-      Z03: [6, 7],
-      Z04: [8, 9],
-      Z05: [10, 11],
-      Z06: [6],
-      Z07: [12, 13],
-      Z08: [14],
-      Z09: [15, 16],
-      Z10: [17, 18],
-      Z11: [19, 20],
-      Z12: [21, 22],
-      Z13: [23, 24],
-      Z14: [25],
-      Z15: [26, 27, 28, 29],
-      Z16: [30],
-      Z17: [31],
-      Z18: [32],
-      Z19: [33],
-      Z20: [34],
-      Z21: [35],
+     const ZONE_CAMERAS = {
+        Z01: ["1", "50", "51", "52"],
+        Z02: ["44", "46", "47", "48", "49", "17-PTZ"],
+        Z03: ["42", "43"],
+        Z04: ["45"],
+        Z05: ["41"],
+        Z06: ["11"],
+        Z07: ["39", "40"],
+        Z08: ["22 (SSP - passantes)"],
+        Z09: ["35", "37", "38"],
+        Z10: ["31"],
+        Z11: ["33", "34"],
+        Z12: ["32"],
+        Z13: ["23", "24", "36"],
+        Z14: ["25"],
+        Z15: ["2-PTZ", "26", "27", "29", "30", "54"],
+        Z16: ["28"],
+        Z17: [],
+        Z18: ["32"],
+        Z19: [],
+        Z20: ["34 (SSP)"],
+        Z21: ["35 (SSP)"],
     };
 
     // Metadados (títulos/descrições) usados na legenda e no modal
     const ZONE_META = {
-      Z01: { title:"Z01 — Arena — Frente do palco principal", desc:"Somatório de câmeras: 1, 2, 3." },
-      Z02: { title:"Z02 — Arena — Intermediário", desc:"Somatório de câmeras: 4, 5." },
-      Z03: { title:"Z03 — Praça de alimentação e arquibancada", desc:"Somatório de câmeras: 6, 7." },
-      Z04: { title:"Z04 — Arena — Fundo", desc:"Somatório de câmeras: 8, 9." },
-      Z05: { title:"Z05 — Polícia Civil / GSM", desc:"Somatório de câmeras: 10, 11." },
-      Z06: { title:"Z06 — Roda gigante", desc:"Somatório de câmeras: 6." },
-      Z07: { title:"Z07 — Acesso arena", desc:"Somatório de câmeras: 12, 13." },
-      Z08: { title:"Z08 — Pista — Entrada orla", desc:"Câmera 14. Regra: últimos 5 min vs média histórica (desta câmera)." },
-      Z09: { title:"Z09 — Área verde — Acesso", desc:"Somatório de câmeras: 15, 16." },
-      Z10: { title:"Z10 — Foodtrucks 1", desc:"Somatório de câmeras: 17, 18." },
-      Z11: { title:"Z11 — Foodtrucks 2", desc:"Somatório de câmeras: 19, 20." },
-      Z12: { title:"Z12 — Palco Brisa", desc:"Somatório de câmeras: 21, 22." },
-      Z13: { title:"Z13 — Área verde — Palco Brisa", desc:"Somatório de câmeras: 23, 24." },
-      Z14: { title:"Z14 — Fundo Palco Brisa", desc:"Somatório de câmeras: 25." },
-      Z15: { title:"Z15 — Área verde — Pista de Skate", desc:"Somatório de câmeras: 26, 27, 28, 29." },
-      Z16: { title:"Z16 — Entrada 2 avenida", desc:"Somatório de câmeras: 30." },
-      Z17: { title:"Z17 — Zona morta", desc:"Somatório de câmeras: 31." },
-      Z18: { title:"Z18 — Camarote — Frente do palco principal", desc:"Somatório de câmeras: 32." },
-      Z19: { title:"Z19 — Backstage", desc:"Somatório de câmeras: 33." },
-      Z20: { title:"Z20 — Saída (SSP)", desc:"Somatório de câmeras: 34. (SSP)" },
-      Z21: { title:"Z21 — Acesso Camarote (SSP)", desc:"Somatório de câmeras: 35. (SSP)" },
-    };
+      Z01: { title:"Z01 — Arena (Frente do palco principal)", desc:"Câmeras: 1, 50, 51, 52." },
+      Z02: { title:"Z02 — Arena (Intermediário)", desc:"Câmeras: 44, 46, 47, 48, 49, 17-PTZ." },
+      Z03: { title:"Z03 — Praça de alimentação e arquibancada", desc:"Câmeras: 42, 43." },
+      Z04: { title:"Z04 — Arena (Fundo)", desc:"Câmera: 45." },
+      Z05: { title:"Z05 — Polícia Civil (GSM)", desc:"Câmera: 41." },
+      Z06: { title:"Z06 — Roda gigante", desc:"Câmera: 11." },
+      Z07: { title:"Z07 — Acesso arena", desc:"Câmeras: 39, 40." },
+      Z08: { title:"Z08 — Pista entrada Orla (SSP)", desc:"Câmera: 22 (passantes SSP)." },
+      Z09: { title:"Z09 — Área verde acesso", desc:"Câmeras: 35, 37, 38." },
+      Z10: { title:"Z10 — Foodtrucks 1", desc:"Câmera: 31." },
+      Z11: { title:"Z11 — Foodtrucks 2", desc:"Câmeras: 33, 34." },
+      Z12: { title:"Z12 — Palco Brisa", desc:"Câmera: 32." },
+      Z13: { title:"Z13 — Área verde (Palco Brisa)", desc:"Câmeras: 23, 24, 36." },
+      Z14: { title:"Z14 — Fundo Palco Brisa", desc:"Câmera: 25." },
+      Z15: { title:"Z15 — Área verde (Pista de Skate)", desc:"Câmeras: 2-PTZ, 26, 27, 29, 30, 54." },
+      Z16: { title:"Z16 — Entrada 2 avenida", desc:"Câmera: 28." },
+      Z17: { title:"Z17 — Zona morta", desc:"Sem câmeras." },
+      Z18: { title:"Z18 — Camarote (Frente do palco principal)", desc:"Câmera: 32." },
+      Z19: { title:"Z19 — Backstage", desc:"Sem câmeras." },
+      Z20: { title:"Z20 — Saída (SSP)", desc:"Câmera: 34 (SSP)." },
+      Z21: { title:"Z21 — Acesso Camarote (SSP)", desc:"Câmeras: 35 (SSP)." },
+  };
 
     function renderZonesLegend(){
       const el = document.getElementById("zonesLegend");
@@ -2511,6 +2511,41 @@ async function pullBackend() {
 
     // Valores instantâneos por zona (usados para cor do mapa)
     const heatValues = Object.fromEntries(Object.keys(ZONE_CAMERAS).map(zid=>[zid, 0]));
+
+
+     // ============================================================
+    // DADOS MANUAIS (Densidade por zona) — DIA 27/12 (pico acumulado)
+    // - Regra aplicada: "pico somado" por zona (não diminui ao longo da noite).
+    // - TOTAL_PRESENTE aqui é o somatório das zonas (referência para consistência).
+    // ============================================================
+
+    const MANUAL_ZONE_SERIES_27 = [
+      { t:"18:00", TOTAL_PRESENTE:0, Z01:0, Z02:0, Z03:0, Z04:0, Z05:0, Z06:0, Z07:0, Z08:0, Z09:0, Z10:0, Z11:0, Z12:0, Z13:0, Z14:0, Z15:0, Z16:0, Z17:0, Z18:0, Z19:0, Z20:0, Z21:0 },
+      { t:"18:30", TOTAL_PRESENTE:8058, Z01:2355, Z02:2133, Z03:1328, Z04:392, Z05:376, Z06:300, Z07:166, Z08:410, Z09:56, Z10:23, Z11:66, Z12:63, Z13:38, Z14:23, Z15:83, Z16:156, Z17:0, Z18:53, Z19:0, Z20:28, Z21:9 },
+      { t:"19:00", TOTAL_PRESENTE:16211, Z01:4876, Z02:4266, Z03:2565, Z04:828, Z05:762, Z06:609, Z07:309, Z08:820, Z09:111, Z10:46, Z11:131, Z12:122, Z13:75, Z14:47, Z15:155, Z16:313, Z17:0, Z18:102, Z19:0, Z20:56, Z21:18 },
+      { t:"19:30", TOTAL_PRESENTE:24415, Z01:7464, Z02:6400, Z03:3770, Z04:1283, Z05:1152, Z06:921, Z07:446, Z08:1231, Z09:167, Z10:69, Z11:197, Z12:180, Z13:113, Z14:70, Z15:223, Z16:469, Z17:0, Z18:149, Z19:0, Z20:84, Z21:27 },
+      { t:"20:00", TOTAL_PRESENTE:32649, Z01:10097, Z02:8533, Z03:4955, Z04:1750, Z05:1545, Z06:1236, Z07:577, Z08:1641, Z09:222, Z10:92, Z11:263, Z12:236, Z13:150, Z14:94, Z15:289, Z16:625, Z17:0, Z18:196, Z19:0, Z20:112, Z21:36 },
+      { t:"20:30", TOTAL_PRESENTE:40910, Z01:12762, Z02:10666, Z03:6125, Z04:2227, Z05:1939, Z06:1552, Z07:706, Z08:2051, Z09:278, Z10:115, Z11:328, Z12:292, Z13:188, Z14:117, Z15:353, Z16:781, Z17:0, Z18:243, Z19:0, Z20:141, Z21:46 },
+      { t:"21:00", TOTAL_PRESENTE:49193, Z01:15455, Z02:12799, Z03:7284, Z04:2712, Z05:2336, Z06:1869, Z07:832, Z08:2462, Z09:333, Z10:138, Z11:394, Z12:347, Z13:225, Z14:140, Z15:416, Z16:938, Z17:0, Z18:289, Z19:0, Z20:169, Z21:55 },
+      { t:"21:30", TOTAL_PRESENTE:56638, Z01:18010, Z02:14807, Z03:8365, Z04:3174, Z05:2710, Z06:2168, Z07:948, Z08:2553, Z09:386, Z10:160, Z11:456, Z12:398, Z13:260, Z14:163, Z15:474, Z16:1016, Z17:0, Z18:332, Z19:0, Z20:195, Z21:63 },
+      { t:"22:00", TOTAL_PRESENTE:64098, Z01:20582, Z02:16815, Z03:9439, Z04:3641, Z05:3085, Z06:2468, Z07:1063, Z08:2644, Z09:438, Z10:182, Z11:517, Z12:449, Z13:296, Z14:185, Z15:532, Z16:1094, Z17:0, Z18:374, Z19:0, Z20:222, Z21:72 },
+      { t:"22:30", TOTAL_PRESENTE:71570, Z01:23170, Z02:18822, Z03:10507, Z04:4113, Z05:3461, Z06:2769, Z07:1177, Z08:2735, Z09:490, Z10:203, Z11:579, Z12:500, Z13:331, Z14:207, Z15:589, Z16:1172, Z17:0, Z18:417, Z19:0, Z20:248, Z21:80 },
+      { t:"23:00", TOTAL_PRESENTE:74674, Z01:24273, Z02:19675, Z03:10958, Z04:4314, Z05:3621, Z06:2897, Z07:1225, Z08:2735, Z09:512, Z10:212, Z11:605, Z12:522, Z13:346, Z14:216, Z15:613, Z16:1172, Z17:0, Z18:435, Z19:0, Z20:259, Z21:84 },
+      { t:"23:30", TOTAL_PRESENTE:77784, Z01:25379, Z02:20527, Z03:11409, Z04:4517, Z05:3781, Z06:3026, Z07:1272, Z08:2735, Z09:535, Z10:222, Z11:632, Z12:543, Z13:361, Z14:225, Z15:637, Z16:1172, Z17:0, Z18:452, Z19:0, Z20:271, Z21:88 },
+      { t:"00:00", TOTAL_PRESENTE:80891, Z01:26486, Z02:21380, Z03:11858, Z04:4719, Z05:3942, Z06:3154, Z07:1320, Z08:2735, Z09:557, Z10:231, Z11:658, Z12:565, Z13:376, Z14:235, Z15:660, Z16:1172, Z17:0, Z18:470, Z19:0, Z20:282, Z21:91 },
+      { t:"00:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"01:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"01:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"02:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"02:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"03:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"03:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"04:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"04:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
+      { t:"05:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 }
+    ];
+
+    const MANUAL_ZONE_MAP_27 = Object.fromEntries(MANUAL_ZONE_SERIES_27.map(r=>[r.t, r]));
 
     // Período solicitado (placeholders): 12/05/2025 até 31/05/2025
     const ZONE_PERIOD_START = new Date(2025, 4, 12); // 12/05/2025
@@ -2604,36 +2639,32 @@ async function pullBackend() {
       return "rgba(0,0,0,0)";
     }
 
+    // Força o mapa a usar o manual (sem backend e sem placeholders)
+    const FORCE_MANUAL_HEATMAP = true;
+
+    // Se quiser travar o mapa em um horário específico pra teste:
+    // const MANUAL_HEATMAP_SLOT = "22:30";
+    const MANUAL_HEATMAP_SLOT = null;
+
+    function floorToHalfHourHHMM(d){
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mm = (d.getMinutes() < 30) ? "00" : "30";
+      return `${hh}:${mm}`;
+    }
+
+    function getManualRow27(){
+      const slot = MANUAL_HEATMAP_SLOT || floorToHalfHourHHMM(new Date());
+      if (MANUAL_ZONE_MAP_27[slot]) return MANUAL_ZONE_MAP_27[slot];
+
+      // clamp fora da janela do evento
+      if (slot < "18:00") return MANUAL_ZONE_MAP_27["18:00"];
+      return MANUAL_ZONE_MAP_27["05:00"];
+    }
+
     function updateZoneHeatValues(){
-      // Base: usa o último dia do período como “referência”, + ruído minuto-a-minuto
-      for(const zid of Object.keys(ZONE_CAMERAS)){
-        const hist = getZoneHistory(zid);
-        const base = hist[hist.length-1]?.total || 0;
-
-        // ruído suave
-        const v = Math.max(0, Math.round(base * (0.86 + Math.random()*0.28)));
-
-        // Z08: regra de fluxo (últimos 5 min vs média)
-        if(zid==="Z08"){
-          // simula fluxo da câmera 14 (por minuto)
-          const flow = Math.round(420 + Math.random()*860); // pessoas/min (placeholder)
-          const series = window.__dashState.cam14Flow;
-          series.push(flow);
-          while(series.length > 90) series.shift();
-
-          const avg = series.reduce((a,b)=>a+b,0) / (series.length || 1);
-          const last5 = series.slice(-5).reduce((a,b)=>a+b,0) / (Math.min(5, series.length) || 1);
-
-          window.__dashState.cam14Avg = avg;
-
-          // se últimos 5 min > média => quente
-          const hot = last5 > (avg * 1.12);
-          // transforma em “valor” para cor (hot => puxa para cima)
-          heatValues[zid] = hot ? Math.round(HEAT_T2 + (last5*18)) : Math.round(HEAT_T1 * 0.65 + (last5*10));
-          heatValues[zid] = clamp(heatValues[zid], 0, 65000);
-        } else {
-          heatValues[zid] = clamp(v, 0, 65000);
-        }
+      const row = getManualRow27();
+      for (const zid of Object.keys(ZONE_CAMERAS)){
+        heatValues[zid] = clamp(Math.round(row?.[zid] || 0), 0, 65000);
       }
     }
 
@@ -2810,17 +2841,21 @@ function initCharts(){
        DYNAMIC TICK (simulate minute refresh)
        ============================================================ */
     async function tick(){
-  // Backend mode: se autenticado, puxa dados reais e renderiza sem simulação.
-  if (BACKEND.enabled && BACKEND.token) {
-    try { await pullBackend(); } catch (e) { /* login overlay já trata */ }
-    renderKpis();
-    renderAlerts();
-    renderTopCams();
-    updateHeatmap();
-    // mantém gráfico e UI como estão (dados por banda continuam no dataset local por enquanto).
-    return;
-  }
+    // Backend mode: se autenticado, puxa dados reais e renderiza sem simulação.
+    if (BACKEND.enabled && BACKEND.token) {
+      try { await pullBackend(); } catch (e) { /* login overlay já trata */ }
+      renderKpis();
+      renderAlerts();
+      renderTopCams();
+      updateHeatmap();
+      // mantém gráfico e UI como estão (dados por banda continuam no dataset local por enquanto).
+      return;
+    }
 
+    // garante mapa manual sempre
+    if (typeof FORCE_MANUAL_HEATMAP !== "undefined" && FORCE_MANUAL_HEATMAP) {
+      updateZoneHeatValues();
+    }
       // time
       const d = new Date();
       document.getElementById("clock").textContent = d.toLocaleTimeString("pt-BR");
