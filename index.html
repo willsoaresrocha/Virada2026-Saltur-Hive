@@ -1396,13 +1396,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento moderado (+12% em 30 min).", meta:"ENTRADA AVENIDA · 19:30", level:"WARN" },
-        { msg:"Movimento moderado (+21% em 30 min).", meta:"ENTRADA ORLA 2 · 19:30", level:"WARN" },
-        { msg:"Movimento moderado (+3% em 30 min).", meta:"SAÍDA · 19:30", level:"WARN" }
+        { msg:"Movimento moderado (+24% em 30 min).", meta:"ENTRADA AVENIDA · 20:00", level:"WARN" },
+        { msg:"Movimento moderado (+24% em 30 min).", meta:"ENTRADA ORLA 2 · 20:00", level:"WARN" },
+        { msg:"Movimento baixo (+5% em 30 min).", meta:"SAÍDA · 20:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:7571, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:3785, out:0, alerts:0 }
+        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:14764, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:7382, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1903,10 +1903,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 11357
-      document.getElementById("k_peak").textContent = 11357
-      document.getElementById("k_total").textContent = 11357
-      document.getElementById("k_alerts").textContent = 230.576     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 22146
+      document.getElementById("k_peak").textContent = 22146
+      document.getElementById("k_total").textContent = 22146
+      document.getElementById("k_alerts").textContent = 241.365     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -2648,6 +2648,101 @@ async function pullBackend() {
       return "rgba(0,0,0,0)";
     }
 
+
+    // ============================================================
+    // CORES MANUAIS POR ZONA (override do mapa)
+    // - Você edita aqui dentro do index.html.
+    // - Aceita chave por ID (Z01) OU por nome (título completo) OU por nome curto.
+    // ============================================================
+
+    // 1) Mapeamento: "chave" -> "cor"
+    // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
+    const MANUAL_ZONE_COLORS = {
+      "Z01": "vinho",
+      "Z02": "vermelho",
+      "Z03": "laranja",
+      "Z04": "laranja",
+      "Z06": "laranja",
+      "Z18": "laranja",
+      "Z04": "azul",
+      "Arena (Intermediário)": "#ff3b8a"
+    };
+
+    // 2) Paleta: nomes -> RGBA (você pode ajustar aqui e pronto)
+    const COLOR_ALIASES = {
+      // frios
+      "frio":   "rgba(87, 164, 255, 0.22)",
+      "azul":   "rgba(87, 164, 255, 0.22)",
+      "ciano":  "rgba(87, 220, 255, 0.22)",
+
+      // quentes
+      "amarelo":"rgba(255, 210, 80, 0.42)",
+      "laranja":"rgba(255, 170, 0, 0.42)",
+      "vermelho":"rgba(255, 70, 120, 0.48)",
+      "vinho":  "rgba(145, 0, 55, 0.55)",
+
+      // neutros
+      "branco": "rgba(255,255,255,0.14)",
+      "cinza":  "rgba(255,255,255,0.10)",
+      "transparente": "rgba(0,0,0,0)",
+      "none": "rgba(0,0,0,0)"
+    };
+
+    function _normKey(s){
+      return String(s || "").trim().toUpperCase();
+    }
+
+    function _hexToRgba(hex, a){
+      const h = String(hex).trim().replace("#","");
+      const full = (h.length === 3) ? h.split("").map(ch=>ch+ch).join("") : h;
+      if(full.length !== 6) return null;
+      const r = parseInt(full.slice(0,2),16);
+      const g = parseInt(full.slice(2,4),16);
+      const b = parseInt(full.slice(4,6),16);
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+
+    function _withAlpha(color, a){
+      const c = String(color || "").trim();
+      if(!c) return null;
+
+      // rgba(...)
+      const mRgba = c.match(/^rgba\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\)$/i);
+      if(mRgba) return `rgba(${mRgba[1]}, ${mRgba[2]}, ${mRgba[3]}, ${a})`;
+
+      // rgb(...)
+      const mRgb = c.match(/^rgb\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\)$/i);
+      if(mRgb) return `rgba(${mRgb[1]}, ${mRgb[2]}, ${mRgb[3]}, ${a})`;
+
+      // #hex
+      if(c.startsWith("#")){
+        return _hexToRgba(c, a) || c;
+      }
+
+      // nome (vermelho/laranja/etc)
+      const alias = COLOR_ALIASES[String(c).toLowerCase()];
+      if(alias) return alias; // já vem com alpha definido
+
+      // fallback: permite CSS color (ex: "red"), mas sem garantir alpha
+      return c;
+    }
+
+    function getManualColorSpecForZone(zid){
+      const title = (typeof ZONE_META !== "undefined" && ZONE_META[zid]?.title) ? ZONE_META[zid].title : "";
+      const shortTitle = title ? title.replace(/^Z\d+\s*[—-]\s*/i, "").trim() : "";
+
+      // Normaliza chaves para bater mesmo que você digite com variações de caixa
+      const idx = new Map(Object.entries(MANUAL_ZONE_COLORS).map(([k,v]) => [_normKey(k), v]));
+
+      return (
+        idx.get(_normKey(zid)) ||
+        (title ? idx.get(_normKey(title)) : null) ||
+        (shortTitle ? idx.get(_normKey(shortTitle)) : null) ||
+        null
+      );
+    }
+
+
     // Força o mapa a usar o manual (sem backend e sem placeholders)
     const FORCE_MANUAL_HEATMAP = true;
 
@@ -2843,23 +2938,30 @@ async function pullBackend() {
 
 
 
-function updateHeatmap(){
+    function updateHeatmap(){
       for(const z of HEAT_ZONES){
         const v = heatValues[z.id] || 0;
         const poly = document.getElementById(`poly_${z.id}`);
         if(!poly) continue;
 
-        const fill = heatColor(v);
+        // 1) tenta cor manual por ID/NOME
+        const manualSpec = getManualColorSpecForZone(z.id);
+        const fill = manualSpec ? _withAlpha(manualSpec, 0.55) : heatColor(v);
+
         poly.setAttribute("fill", fill);
         poly.setAttribute("data-value", String(v));
 
         // swatch na legenda
         const sw = document.getElementById(`swatch_${z.id}`);
         if(sw){
-          sw.style.background = (v>0) ? fill.replace(/,\s*0\.\d+\)$/, ", 0.85)") : "rgba(255,255,255,0.10)";
+          const swFill = manualSpec
+            ? _withAlpha(manualSpec, 0.85)
+            : ((v>0) ? fill.replace(/,\s*0\.\d+\)$/, ", 0.85)") : "rgba(255,255,255,0.10)");
+          sw.style.background = swFill;
         }
       }
     }
+
 
 function initCharts(){
       // Sparklines
@@ -2912,6 +3014,11 @@ function initCharts(){
       // mantém gráfico e UI como estão (dados por banda continuam no dataset local por enquanto).
       return;
     }
+
+    if (typeof FORCE_MANUAL_HEATMAP !== "undefined" && FORCE_MANUAL_HEATMAP) {
+      updateZoneHeatValues();
+    }
+
 
     // garante mapa manual sempre
     if (typeof FORCE_MANUAL_HEATMAP !== "undefined" && FORCE_MANUAL_HEATMAP) {
