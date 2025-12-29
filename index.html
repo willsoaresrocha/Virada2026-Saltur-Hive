@@ -1396,13 +1396,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Áreas livres (+0% em 10 min).", meta:"ENTRADA AVENIDA · 06:00", level:"WARN" },
-        { msg:"Áreas livres (+0% em 10 min).", meta:"ENTRADA ORLA 2 · 06:00", level:"WARN" },
-        { msg:"Áreas livres (+0% em 10 min).", meta:"SAÍDA · 06:00", level:"WARN" }
+        { msg:"Áreas livres (+12% em 30 min).", meta:"ENTRADA AVENIDA · 19:00", level:"WARN" },
+        { msg:"Áreas livres (+21% em 30 min).", meta:"ENTRADA ORLA 2 · 19:00", level:"WARN" },
+        { msg:"Áreas livres (+3% em 30 min).", meta:"SAÍDA · 18:30", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Orla — Acesso", in:0, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:0, out:0, alerts:0 }
+        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:3280, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:1640, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1903,10 +1903,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 0
-      document.getElementById("k_peak").textContent = 0
-      document.getElementById("k_total").textContent = 0
-      document.getElementById("k_alerts").textContent = 219.219     //27/12 = 118.060
+      document.getElementById("k_now").textContent = 4921
+      document.getElementById("k_peak").textContent = 4921
+      document.getElementById("k_total").textContent = 4921
+      document.getElementById("k_alerts").textContent = 224.140     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -3045,6 +3045,33 @@ charts.allBandsCompact.update("none");
     function closeModal(id){
       document.getElementById(id).classList.remove("open");
     }
+
+    /* ============================================================
+   MODALS — FIX (close button + ESC)
+   Cole logo após openModal() e closeModal()
+   ============================================================ */
+
+    // 1) Botão "Fechar" via delegation (funciona mesmo se wireModals() falhar)
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-close]");
+      if (!btn) return;
+
+      e.preventDefault();
+      const id = btn.getAttribute("data-close");
+      if (id) closeModal(id);
+    });
+
+    // 2) Fechar com ESC (fecha o último modal aberto)
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+
+      // fecha o modal mais "no topo" (último .modal.open na página)
+      const opened = Array.from(document.querySelectorAll(".modal.open"));
+      if (!opened.length) return;
+
+      opened[opened.length - 1].classList.remove("open");
+    });
+
 
     
 function getSSPHistoryFor(camId){
