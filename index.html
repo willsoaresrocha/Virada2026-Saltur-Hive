@@ -1372,7 +1372,7 @@ async function pullBackend() {
             { label: "Tony Salles", value: 49184 }
         ],
         "29/12": [
-            { label: "Durval Lélys", value: 0 },
+            { label: "Durval Lélys", value: 11357 },
             { label: "Nattan", value: 0 },
             { label: "Natanzinho Lima", value: 0 },
             { label: "Matheus e Kauan", value: 0 },
@@ -1396,13 +1396,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Áreas livres (+12% em 30 min).", meta:"ENTRADA AVENIDA · 19:00", level:"WARN" },
-        { msg:"Áreas livres (+21% em 30 min).", meta:"ENTRADA ORLA 2 · 19:00", level:"WARN" },
-        { msg:"Áreas livres (+3% em 30 min).", meta:"SAÍDA · 18:30", level:"WARN" }
+        { msg:"Movimento moderado (+12% em 30 min).", meta:"ENTRADA AVENIDA · 19:30", level:"WARN" },
+        { msg:"Movimento moderado (+21% em 30 min).", meta:"ENTRADA ORLA 2 · 19:30", level:"WARN" },
+        { msg:"Movimento moderado (+3% em 30 min).", meta:"SAÍDA · 19:30", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:3280, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:1640, out:0, alerts:0 }
+        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:7571, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:3785, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1903,10 +1903,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 4921
-      document.getElementById("k_peak").textContent = 4921
-      document.getElementById("k_total").textContent = 4921
-      document.getElementById("k_alerts").textContent = 224.140     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 11357
+      document.getElementById("k_peak").textContent = 11357
+      document.getElementById("k_total").textContent = 11357
+      document.getElementById("k_alerts").textContent = 230.576     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
