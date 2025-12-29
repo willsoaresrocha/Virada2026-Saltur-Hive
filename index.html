@@ -867,7 +867,7 @@
     <div id="rankingPublicos" class="card pad">
       <div class="rank-title">
         <h2>Ranking dos Maiores Públicos</h2>
-        <div class="ranking-sub">Ranking dos 10 Maiores Públicos de 2024 </div>
+        <div class="ranking-sub">Ranking dos 10 Maiores Públicos </div>
       </div>
       <div class="chart-wrap chart-tall" style="margin-top:8px;">
         <canvas id="chartBigRanking"></canvas>
@@ -1142,7 +1142,8 @@
           <div class="card-title">
             <div>
               <h3>Resumo operacional</h3>
-              <div class="hint">Período: 12/05/2025 até 31/05/2025 (placeholders — pronto para plugar no banco).</div>
+              <div class="hint">Período: 27/12 (18:00) até 28/12 (05:00) — estimativa por zona (meia em meia hora).</div>
+
             </div>
             <div class="chip rank"><span class="mini-dot"></span><span>zona</span></div>
           </div>
@@ -1203,9 +1204,10 @@
             </div>
             <div class="table-wrap" style="margin-top:10px; max-height:220px; overflow:auto;">
               <table class="tbl" id="zoneTable">
-                <thead><tr><th>Data</th><th>Total</th><th>Manhã</th><th>Tarde</th><th>Noite</th></tr></thead>
+                <thead><tr><th>Horário</th><th>Total (estimado)</th></tr></thead>
                 <tbody></tbody>
               </table>
+
             </div>
           </div>
 
@@ -1901,7 +1903,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 94.074
+      document.getElementById("k_now").textContent = 82.134
       document.getElementById("k_peak").textContent = 101.159
       document.getElementById("k_total").textContent = 94.074
       document.getElementById("k_alerts").textContent = 219.219     //27/12 = 118.060
@@ -2221,9 +2223,13 @@ async function pullBackend() {
     }
 
     function createBigRanking(){
-      const ctx = document.getElementById("chartBigRanking");
-      const items = [...state.rankingTop10]; // already top10 sorted
-      return new Chart(ctx,{
+      const canvas = document.getElementById("chartBigRanking");
+      if(!canvas) return null; // nesta versão (SSP) pode não existir
+
+      const items = [...(state.rankingTop10 || [])]; // FIX: era [.state...]
+      if(!items.length) return null;
+
+      return new Chart(canvas,{
         type:"bar",
         data:{
           labels: items.map(x=>x.label),
@@ -2231,7 +2237,7 @@ async function pullBackend() {
             label:"Público",
             data: items.map(x=>x.value),
             borderRadius:8,
-            backgroundColor:"rgba(255,204,102,.72)"
+            backgroundColor:"rgba(255,204,102,72)"
           }]
         },
         options:{
@@ -2244,20 +2250,18 @@ async function pullBackend() {
             tooltip:{
               enabled:true,
               backgroundColor:"#0b111a",
-              borderColor:"rgba(255,255,255,.10)",
+              borderColor:"rgba(255,255,255,10)",
               borderWidth:1,
-              titleColor:"rgba(255,255,255,.92)",
-              bodyColor:"rgba(255,255,255,.85)",
+              titleColor:"rgba(255,255,255,92)",
+              bodyColor:"rgba(255,255,255,85)",
               padding:10,
-              callbacks:{
-                label:(ctx)=>` ${fmtInt(ctx.parsed.x)}`
-              }
+              callbacks:{ label:(ctx)=>` ${fmtInt(ctx.parsed.x)}` }
             }
           },
           scales:{
             x:{
               ticks:{
-                color:"rgba(255,255,255,.65)",
+                color:"rgba(255,255,255,65)",
                 callback:(v)=> (v>=1000? (v/1000).toFixed(0)+".000" : v)
               },
               grid:{ color:"rgba(255,255,255,.06)" },
@@ -2272,9 +2276,11 @@ async function pullBackend() {
       });
     }
 
+
     function createNightChart(canvasId, nightKey, color){
       const ctx = document.getElementById(canvasId);
       const items = state.nights[nightKey];
+      
       return new Chart(ctx,{
         type:"bar",
         data:{
@@ -2301,6 +2307,7 @@ async function pullBackend() {
         }
       });
     }
+
 
     function createCamModalChart(labels, data){
       const ctx = document.getElementById("camModalChart");
@@ -2568,6 +2575,8 @@ async function pullBackend() {
       return out;
     }
 
+
+
     // RNG determinístico (para manter o demo estável entre refresh)
     function seededRand(seedStr){
       let h = 2166136261;
@@ -2686,8 +2695,10 @@ async function pullBackend() {
     function ensureZoneModalCharts(){
       if(charts.zoneDaily && charts.zonePeriods) return;
 
-      // Daily line
       const ctxD = document.getElementById("zoneChartDaily");
+      const ctxP = document.getElementById("zoneChartPeriods");
+      if(!ctxD || !ctxP) return; // evita crash
+
       charts.zoneDaily = new Chart(ctxD, {
         type:"line",
         data:{ labels:[], datasets:[{ data:[], borderColor:"rgba(87,164,255,1)", backgroundColor:"rgba(87,164,255,.12)", tension:.35, fill:false, pointRadius:0 }] },
@@ -2701,11 +2712,18 @@ async function pullBackend() {
         }
       });
 
-      // Periods bar
-      const ctxP = document.getElementById("zoneChartPeriods");
       charts.zonePeriods = new Chart(ctxP, {
         type:"bar",
-        data:{ labels:["Manhã","Tarde","Noite"], datasets:[{ data:[0,0,0], backgroundColor:["rgba(87,164,255,.35)","rgba(255,170,0,.35)","rgba(255,70,120,.35)"], borderColor:"rgba(255,255,255,.12)", borderWidth:1, borderRadius:10 }] },
+        data:{
+          labels: ZONE_BLOCKS.map(b=>b.label),
+          datasets:[{
+            data: new Array(ZONE_BLOCKS.length).fill(0),
+            backgroundColor: "rgba(255,255,255,.18)",
+            borderColor:"rgba(255,255,255,.12)",
+            borderWidth:1,
+            borderRadius:10
+          }]
+        },
         options:{
           responsive:true, maintainAspectRatio:false,
           plugins:{ legend:{display:false}, tooltip:{enabled:true} },
@@ -2717,6 +2735,43 @@ async function pullBackend() {
       });
     }
 
+
+    const EVENT_LABEL = "27/12";
+    const EVENT_WINDOW_LABEL = "18:00–05:00";
+
+    function timeToEventMinutes(hhmm){
+      const [h,m] = hhmm.split(":").map(Number);
+      let min = h*60 + m;
+      // após meia-noite, ainda é “dia 27” até 06:00
+      if(min < 6*60) min += 24*60;
+      return min;
+    }
+
+    const ZONE_BLOCKS = [
+      { label:"18–21", from:"18:00", to:"21:00" },
+      { label:"21–01", from:"21:00", to:"01:00" },
+      { label:"01–03", from:"01:00", to:"03:00" },
+      { label:"03–05", from:"03:00", to:"05:00" }
+    ];
+
+    function inBlock(hhmm, block){
+      const t = timeToEventMinutes(hhmm);
+      const a = timeToEventMinutes(block.from);
+      const b = timeToEventMinutes(block.to);
+      return (t >= a && t < b);
+    }
+
+    function getZoneSeries27(zid){
+      const out = [];
+      for(const [hhmm, row] of Object.entries(MANUAL_ZONE_MAP_27)){
+        if(hhmm === "TOTAL_PRESENTE") continue;
+        out.push({ hhmm, value: Number(row?.[zid] ?? 0) });
+      }
+      out.sort((a,b)=>timeToEventMinutes(a.hhmm)-timeToEventMinutes(b.hhmm));
+      return out;
+    }
+
+
     function openZoneModal(zid){
       const meta = ZONE_META[zid] || { title:zid, desc:"" };
       window.__dashState.selectedZone = zid;
@@ -2727,61 +2782,67 @@ async function pullBackend() {
       document.getElementById("zoneModalTitle").textContent = meta.title;
       document.getElementById("zoneModalSub").textContent = meta.desc;
 
-      // Dados
-      const rows = getZoneHistory(zid);
-      const labels = rows.map(r=>fmtBR(r.date));
-      const totals = rows.map(r=>r.total);
+      // Série do evento (meia em meia hora)
+      const series = getZoneSeries27(zid);
+      const labels = series.map(p=>p.hhmm);
+      const totals = series.map(p=>p.value);
 
       const totalPeriod = totals.reduce((a,b)=>a+b,0);
-      const avgDay = Math.round(totalPeriod / (totals.length || 1));
+      const avgSlot = Math.round(totalPeriod / (totals.length || 1));
+
       let peak = -1, peakIdx = 0;
       totals.forEach((v,i)=>{ if(v>peak){ peak=v; peakIdx=i; } });
 
-      const sumMorning = rows.reduce((a,r)=>a+r.morning,0);
-      const sumAfternoon = rows.reduce((a,r)=>a+r.afternoon,0);
-      const sumNight = rows.reduce((a,r)=>a+r.night,0);
-
       // KPIs
       document.getElementById("zoneKpiTotal").textContent = totalPeriod.toLocaleString("pt-BR");
-      document.getElementById("zoneKpiAvg").textContent = avgDay.toLocaleString("pt-BR");
+      document.getElementById("zoneKpiAvg").textContent = avgSlot.toLocaleString("pt-BR");
       document.getElementById("zoneKpiPeak").textContent = peak.toLocaleString("pt-BR");
-      document.getElementById("zoneKpiPeakSub").textContent = `Dia: ${labels[peakIdx]} (${fmtBRFull(rows[peakIdx].date)})`;
+      document.getElementById("zoneKpiPeakSub").textContent = `${EVENT_LABEL} · ${labels[peakIdx]} (${EVENT_WINDOW_LABEL})`;
 
-      // Status (especial Z08)
+      // Status (mantém regra especial Z08; demais usa thresholds do heatmap)
       let status = "NORMAL";
       if(zid==="Z08"){
-        const series = window.__dashState.cam14Flow;
+        const series5 = window.__dashState.cam14Flow || [];
         const avg = window.__dashState.cam14Avg || 0;
-        const last5 = series.slice(-5).reduce((a,b)=>a+b,0) / (Math.min(5, series.length) || 1);
+        const last5 = series5.slice(-5).reduce((a,b)=>a+b,0) / (Math.min(5, series5.length) || 1);
         status = (last5 > avg*1.12) ? "QUENTE" : "FRIO";
       } else {
         status = (heatValues[zid] >= HEAT_T2) ? "QUENTE" : (heatValues[zid] >= HEAT_T1 ? "ATENÇÃO" : "NORMAL");
       }
       document.getElementById("zoneKpiStatus").textContent = status;
 
+      // Blocos do evento (para o gráfico “Por período”)
+      const blockSums = ZONE_BLOCKS.map(b =>
+        series.filter(p=>inBlock(p.hhmm, b)).reduce((a,p)=>a+p.value,0)
+      );
+
       // Charts
       ensureZoneModalCharts();
-      charts.zoneDaily.data.labels = labels;
-      charts.zoneDaily.data.datasets[0].data = totals;
-      charts.zoneDaily.update("none");
+      if(charts.zoneDaily){
+        charts.zoneDaily.data.labels = labels;
+        charts.zoneDaily.data.datasets[0].data = totals;
+        charts.zoneDaily.update("none");
+      }
+      if(charts.zonePeriods){
+        charts.zonePeriods.data.labels = ZONE_BLOCKS.map(b=>b.label);
+        charts.zonePeriods.data.datasets[0].data = blockSums;
+        charts.zonePeriods.update("none");
+      }
 
-      charts.zonePeriods.data.datasets[0].data = [sumMorning, sumAfternoon, sumNight];
-      charts.zonePeriods.update("none");
-
-      // Table
+      // Table (meia em meia hora)
       const tbody = document.querySelector("#zoneTable tbody");
-      tbody.innerHTML = rows.map(r=>`
+      tbody.innerHTML = series.map(p=>`
         <tr>
-          <td>${fmtBRFull(r.date)}</td>
-          <td class="mono">${r.total.toLocaleString("pt-BR")}</td>
-          <td class="mono">${r.morning.toLocaleString("pt-BR")}</td>
-          <td class="mono">${r.afternoon.toLocaleString("pt-BR")}</td>
-          <td class="mono">${r.night.toLocaleString("pt-BR")}</td>
+          <td>${p.hhmm}</td>
+          <td class="mono">${p.value.toLocaleString("pt-BR")}</td>
         </tr>
       `).join("");
 
       openModal("modalZone");
     }
+
+
+
 function updateHeatmap(){
       for(const z of HEAT_ZONES){
         const v = heatValues[z.id] || 0;
