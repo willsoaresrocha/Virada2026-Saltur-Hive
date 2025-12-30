@@ -1378,7 +1378,7 @@ async function pullBackend() {
         "29/12": [
             { label: "Durval Lélys", value: 53002 },
             { label: "Nattan", value: 80758 },
-            { label: "Natanzinho Lima", value: 0 },
+            { label: "Natanzinho Lima", value: 88818 },
             { label: "Matheus e Kauan", value: 0 },
             { label: "Psirico", value: 0 }
         ],
@@ -1400,13 +1400,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento extremamente alto (+59% em 30 min).", meta:"ENTRADA AVENIDA · 23:00", level:"BAD" },
-        { msg:"Movimento extremamente alto (+48% em 30 min).", meta:"ENTRADA ORLA 2 · 23:00", level:"BAD" },
-        { msg:"Movimento baixo (+9% em 30 min).", meta:"SAÍDA · 23:00", level:"WARN" }
+        { msg:"Movimento extremamente alto (+64% em 30 min).", meta:"ENTRADA AVENIDA · 23:30", level:"BAD" },
+        { msg:"Movimento extremamente alto (+55% em 30 min).", meta:"ENTRADA ORLA 2 · 23:30", level:"BAD" },
+        { msg:"Movimento baixo (+9% em 30 min).", meta:"SAÍDA · 23:30", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:53838, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:26919, out:0, alerts:0 }
+        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:59212, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:29606, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1907,10 +1907,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 80.758
-      document.getElementById("k_peak").textContent = 80.758
-      document.getElementById("k_total").textContent = 80.758
-      document.getElementById("k_alerts").textContent = 299.997     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 88.818
+      document.getElementById("k_peak").textContent = 88.872
+      document.getElementById("k_total").textContent = 88.818
+      document.getElementById("k_alerts").textContent = 308.256     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -2666,13 +2666,13 @@ async function pullBackend() {
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
       "Z02": "vinho",
-      "Z03": "vermelho",
-      "Z04": "vermelho", 
-      "Z05": "vermelho",
+      "Z03": "vinho",
+      "Z04": "vinho", 
+      "Z05": "vinho",
       "Z06": "vinho",
       "Z18": "laranja",
-      "Z07": "laranja",
-      "Z09": "laranja",
+      "Z07": "vermelho",
+      "Z09": "vermelho",
       "Z08": "azul",
       "Z10": "azul",
       "Z11": "azul",
@@ -2681,7 +2681,7 @@ async function pullBackend() {
       "Z14": "azul",
       "Z15": "azul",
       "Z16": "azul",
-      "Z18": "vermelho",
+      "Z18": "vinho",
       "Z19": "laranja",
       "Z20": "azul",
       "Z21": "laranja",
