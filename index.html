@@ -1464,14 +1464,14 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Área vazia (+1% em 30 min).", meta:"ENTRADA AVENIDA · 05:00", level:"WARN" },
-        { msg:"Área vazia (+2% em 30 min).", meta:"ENTRADA ORLA 2 · 05:00", level:"WARN" },
-        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 05:00", level:"WARN" }
+        { msg:"Movimento extremamente intenso (+68% em 30 min).", meta:"ENTRADA AVENIDA · 20:30", level:"BAD" },
+        { msg:"Movimento intenso (+31% em 30 min).", meta:"ENTRADA ORLA 2 · 20:30", level:"BAD" },
+        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 20:30", level:"WARN" }
       ],
       topCams15: [
-        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:11209, out:0, alerts:0 },
-        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:5248, out:0, alerts:0 },
-        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:897, out:0, alerts:0 }        
+        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:29209, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:34248, out:0, alerts:0 },
+        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:11897, out:0, alerts:0 }        
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1972,10 +1972,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 0
-      document.getElementById("k_peak").textContent = 0
-      document.getElementById("k_total").textContent = 0
-      document.getElementById("k_alerts").textContent = 273.625     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 78.958
+      document.getElementById("k_peak").textContent = 78.958
+      document.getElementById("k_total").textContent = 78.958
+      document.getElementById("k_alerts").textContent = 352.583     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("k_27").textContent = 84001  
@@ -2735,27 +2735,27 @@ async function pullBackend() {
     // 1) Mapeamento: "chave" -> "cor"
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
-      "Z01": "azul",
-      "Z02": "azul",
-      "Z03": "azul",
-      "Z04": "azul", 
-      "Z05": "azul",
-      "Z06": "azul",
+      "Z01": "vinho",
+      "Z02": "vinho",
+      "Z03": "vermelho",
+      "Z04": "vermelho", 
+      "Z05": "laranja",
+      "Z06": "vinho",
       "Z18": "azul",
       "Z07": "azul",
       "Z09": "azul",
-      "Z08": "azul",
+      "Z08": "laranja",
       "Z10": "azul",
-      "Z11": "azul",
+      "Z11": "vermelho",
       "Z12": "azul",
       "Z13": "azul",
       "Z14": "azul",
-      "Z15": "azul",
+      "Z15": "vinho",
       "Z16": "azul",
-      "Z18": "azul",
+      "Z18": "vinho",
       "Z19": "azul",
       "Z20": "azul",
-      "Z21": "azul",
+      "Z21": "laranja",
       "Arena (Intermediário)": "#ff3b8a"
     };
 
