@@ -1400,14 +1400,14 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento baixo (+12% em 30 min).", meta:"ENTRADA AVENIDA · 04:30", level:"WARN" },
-        { msg:"Movimento baixo (+8% em 30 min).", meta:"ENTRADA ORLA 2 · 04:30", level:"WARN" },
-        { msg:"Movimento alto (+43% em 30 min).", meta:"SAÍDA · 04:30", level:"WARN" }
+        { msg:"Área vazia (+1% em 30 min).", meta:"ENTRADA AVENIDA · 05:00", level:"WARN" },
+        { msg:"Área vazia (+2% em 30 min).", meta:"ENTRADA ORLA 2 · 05:00", level:"WARN" },
+        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 05:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:17209, out:0, alerts:0 },
-        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:11248, out:0, alerts:0 },
-        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:10897, out:0, alerts:0 }        
+        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:11209, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:5248, out:0, alerts:0 },
+        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:897, out:0, alerts:0 }        
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1908,7 +1908,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 36.245  //122.872
+      document.getElementById("k_now").textContent = 18.304  //122.872
       document.getElementById("k_peak").textContent = 104.638
       document.getElementById("k_total").textContent = 100.477
       document.getElementById("k_alerts").textContent = 319.696     //28/12 = 219.219 == 27/12 = 118.060
@@ -2666,12 +2666,12 @@ async function pullBackend() {
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
-      "Z02": "laranja",
-      "Z03": "laranja",
-      "Z04": "laranja", 
+      "Z02": "azul",
+      "Z03": "azul",
+      "Z04": "azul", 
       "Z05": "azul",
-      "Z06": "laranja",
-      "Z18": "laranja",
+      "Z06": "azul",
+      "Z18": "azul",
       "Z07": "azul",
       "Z09": "azul",
       "Z08": "azul",
