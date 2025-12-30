@@ -1400,13 +1400,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento alto (+41% em 30 min).", meta:"ENTRADA AVENIDA · 21:00", level:"WARN" },
-        { msg:"Movimento alto (+33% em 30 min).", meta:"ENTRADA ORLA 2 · 21:00", level:"WARN" },
-        { msg:"Movimento baixo (+6% em 30 min).", meta:"SAÍDA · 21:00", level:"WARN" }
+        { msg:"Movimento alto (+45% em 30 min).", meta:"ENTRADA AVENIDA · 21:30", level:"WARN" },
+        { msg:"Movimento alto (+37% em 30 min).", meta:"ENTRADA ORLA 2 · 21:30", level:"WARN" },
+        { msg:"Movimento baixo (+7% em 30 min).", meta:"SAÍDA · 21:30", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:35334, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:17667, out:0, alerts:0 }
+        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:39895, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:19992, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1907,10 +1907,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 53002
-      document.getElementById("k_peak").textContent = 53002
-      document.getElementById("k_total").textContent = 53002
-      document.getElementById("k_alerts").textContent = 272.221     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 59.768
+      document.getElementById("k_peak").textContent = 59.768
+      document.getElementById("k_total").textContent = 59.768
+      document.getElementById("k_alerts").textContent = 278.987     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -2665,15 +2665,14 @@ async function pullBackend() {
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
-      "Z02": "vermelho",
-      "Z03": "laranja",
-      "Z04": "laranja",
-      "Z05": "azul",
-      "Z06": "laranja",
+      "Z02": "vinho",
+      "Z03": "vermelho",
+      "Z04": "vermelho", 
+      "Z05": "vermelho",
+      "Z06": "vinho",
       "Z18": "laranja",
-      "Z04": "azul",
-      "Z07": "azul",
-      "Z09": "azul",
+      "Z07": "laranja",
+      "Z09": "laranja",
       "Z08": "azul",
       "Z10": "azul",
       "Z11": "azul",
@@ -2682,6 +2681,7 @@ async function pullBackend() {
       "Z14": "azul",
       "Z15": "azul",
       "Z16": "azul",
+      "Z18": "vermelho",
       "Z19": "laranja",
       "Z20": "azul",
       "Z21": "laranja",
