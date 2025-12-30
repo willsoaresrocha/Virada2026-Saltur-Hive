@@ -1400,13 +1400,14 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento baixo (+13% em 30 min).", meta:"ENTRADA AVENIDA · 02:00", level:"WARN" },
-        { msg:"Movimento baixo (+9% em 30 min).", meta:"ENTRADA ORLA 2 · 02:00", level:"WARN" },
-        { msg:"Movimento baixo (+10% em 30 min).", meta:"SAÍDA · 02:00", level:"WARN" }
+        { msg:"Movimento baixo (+12% em 30 min).", meta:"ENTRADA AVENIDA · 03:30", level:"WARN" },
+        { msg:"Movimento baixo (+8% em 30 min).", meta:"ENTRADA ORLA 2 · 03:30", level:"WARN" },
+        { msg:"Movimento alto (+43% em 30 min).", meta:"SAÍDA · 03:30", level:"BAD" }
       ],
       topCams15: [
-        { cam:"Cam 01", local:"Z01 — Arena (Frente do palco principal)", in:35554, out:0, alerts:0 },
-        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:30798, out:0, alerts:0 }
+        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:17209, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:11248, out:0, alerts:0 },
+        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:10897, out:0, alerts:0 }        
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1907,8 +1908,8 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 100.477  //122.872
-      document.getElementById("k_peak").textContent = 110.638
+      document.getElementById("k_now").textContent = 49.367  //122.872
+      document.getElementById("k_peak").textContent = 104.638
       document.getElementById("k_total").textContent = 100.477
       document.getElementById("k_alerts").textContent = 319.696     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
@@ -2665,14 +2666,14 @@ async function pullBackend() {
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
-      "Z02": "vinho",
-      "Z03": "vinho",
-      "Z04": "vinho", 
-      "Z05": "vinho",
-      "Z06": "vinho",
+      "Z02": "vermelho",
+      "Z03": "laranja",
+      "Z04": "laranja", 
+      "Z05": "azul",
+      "Z06": "vermelho",
       "Z18": "laranja",
-      "Z07": "vermelho",
-      "Z09": "vermelho",
+      "Z07": "azul",
+      "Z09": "azul",
       "Z08": "azul",
       "Z10": "azul",
       "Z11": "azul",
@@ -2683,8 +2684,8 @@ async function pullBackend() {
       "Z16": "azul",
       "Z18": "vinho",
       "Z19": "laranja",
-      "Z20": "azul",
-      "Z21": "laranja",
+      "Z20": "laranja",
+      "Z21": "azul",
       "Arena (Intermediário)": "#ff3b8a"
     };
 
