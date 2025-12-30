@@ -795,7 +795,7 @@
         <div class="k-top">
           <div>
             <div class="k-label">Alertas ativos</div>
-            <div class="k-value" id="k_status">OK</div>
+            <div class="k-value" id="k_status">ATENÇÃO</div>
             <div class="k-sub">Análise inteligente de todos os setores</div>
           </div>
           <div class="k-status"><span class="sig"></span><span>ALERTA</span></div>
@@ -1377,7 +1377,7 @@ async function pullBackend() {
         ],
         "29/12": [
             { label: "Durval Lélys", value: 53002 },
-            { label: "Nattan", value: 0 },
+            { label: "Nattan", value: 64979 },
             { label: "Natanzinho Lima", value: 0 },
             { label: "Matheus e Kauan", value: 0 },
             { label: "Psirico", value: 0 }
@@ -1400,13 +1400,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento alto (+45% em 30 min).", meta:"ENTRADA AVENIDA · 21:30", level:"WARN" },
-        { msg:"Movimento alto (+37% em 30 min).", meta:"ENTRADA ORLA 2 · 21:30", level:"WARN" },
-        { msg:"Movimento baixo (+7% em 30 min).", meta:"SAÍDA · 21:30", level:"WARN" }
+        { msg:"Movimento extremamente alto (+59% em 30 min).", meta:"ENTRADA AVENIDA · 22:00", level:"BAD" },
+        { msg:"Movimento extremamente alto (+48% em 30 min).", meta:"ENTRADA ORLA 2 · 22:00", level:"BAD" },
+        { msg:"Movimento baixo (+7% em 30 min).", meta:"SAÍDA · 22:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:39895, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:19992, out:0, alerts:0 }
+        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:43319, out:0, alerts:0 },
+        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:21659, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1907,10 +1907,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 59.768
-      document.getElementById("k_peak").textContent = 59.768
-      document.getElementById("k_total").textContent = 59.768
-      document.getElementById("k_alerts").textContent = 278.987     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 64.979
+      document.getElementById("k_peak").textContent = 64.979
+      document.getElementById("k_total").textContent = 64.979
+      document.getElementById("k_alerts").textContent = 284.198     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -3059,7 +3059,7 @@ function initCharts(){
       state.kpis.peakNight = Math.max(state.kpis.peakNight, state.kpis.now + rand(6000, 22000));
       state.kpis.total = state.kpis.total + rand(3500, 12000);
       state.kpis.alertsActive = clamp(state.kpis.alertsActive + (Math.random()<.25?(Math.random()<.5?-1:1):0), 0, 7);
-      state.kpis.status = (state.kpis.alertsActive >= 5) ? "ATENÇÃO" : "OK";
+      state.kpis.status = (state.kpis.alertsActive >= 1) ? "ATENÇÃO" : "OK";
 
       // Smart indicators drift
       state.smart.pressureZone = pick(state.zones);
