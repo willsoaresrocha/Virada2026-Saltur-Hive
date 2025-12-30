@@ -1380,7 +1380,7 @@ async function pullBackend() {
             { label: "Nattan", value: 80758 },
             { label: "Natanzinho Lima", value: 95556 },
             { label: "Matheus e Kauan", value: 100477 },
-            { label: "Psirico", value: 0 }
+            { label: "Psirico", value: 42200 }
         ],
         "30/12": [
             { label: "Olodum", value: 0 },
@@ -1400,9 +1400,9 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento baixo (+12% em 30 min).", meta:"ENTRADA AVENIDA · 03:30", level:"WARN" },
-        { msg:"Movimento baixo (+8% em 30 min).", meta:"ENTRADA ORLA 2 · 03:30", level:"WARN" },
-        { msg:"Movimento alto (+43% em 30 min).", meta:"SAÍDA · 03:30", level:"BAD" }
+        { msg:"Movimento baixo (+12% em 30 min).", meta:"ENTRADA AVENIDA · 04:30", level:"WARN" },
+        { msg:"Movimento baixo (+8% em 30 min).", meta:"ENTRADA ORLA 2 · 04:30", level:"WARN" },
+        { msg:"Movimento alto (+43% em 30 min).", meta:"SAÍDA · 04:30", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:17209, out:0, alerts:0 },
@@ -1908,7 +1908,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 49.367  //122.872
+      document.getElementById("k_now").textContent = 36.245  //122.872
       document.getElementById("k_peak").textContent = 104.638
       document.getElementById("k_total").textContent = 100.477
       document.getElementById("k_alerts").textContent = 319.696     //28/12 = 219.219 == 27/12 = 118.060
@@ -2666,11 +2666,11 @@ async function pullBackend() {
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
-      "Z02": "vermelho",
+      "Z02": "laranja",
       "Z03": "laranja",
       "Z04": "laranja", 
       "Z05": "azul",
-      "Z06": "vermelho",
+      "Z06": "laranja",
       "Z18": "laranja",
       "Z07": "azul",
       "Z09": "azul",
@@ -2684,7 +2684,7 @@ async function pullBackend() {
       "Z16": "azul",
       "Z18": "vinho",
       "Z19": "laranja",
-      "Z20": "laranja",
+      "Z20": "azul",
       "Z21": "azul",
       "Arena (Intermediário)": "#ff3b8a"
     };
