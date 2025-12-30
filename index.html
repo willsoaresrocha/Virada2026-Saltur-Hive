@@ -1400,13 +1400,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento alto (+49% em 30 min).", meta:"ENTRADA AVENIDA · 00:30", level:"WARN" },
-        { msg:"Movimento moderado (+32% em 30 min).", meta:"ENTRADA ORLA 2 · 00:30", level:"WARN" },
-        { msg:"Movimento baixo (+15% em 30 min).", meta:"SAÍDA · 00:30", level:"WARN" }
+        { msg:"Movimento alto (+49% em 30 min).", meta:"ENTRADA AVENIDA · 01:00", level:"WARN" },
+        { msg:"Movimento moderado (+32% em 30 min).", meta:"ENTRADA ORLA 2 · 01:00", level:"WARN" },
+        { msg:"Movimento baixo (+15% em 30 min).", meta:"SAÍDA · 01:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"ENTRADA AVENIDA", local:"Avenida — Acesso", in:63704, out:0, alerts:0 },
-        { cam:"ENTRADA ORLA ", local:"Orla — Acesso ", in:31852, out:0, alerts:0 }
+        { cam:"Cam 01", local:"Z01 — Arena (Frente do palco principal)", in:34514, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:29784, out:0, alerts:0 }
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1907,10 +1907,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 95.556
+      document.getElementById("k_now").textContent = 99.007  //122.872
       document.getElementById("k_peak").textContent = 102.548
-      document.getElementById("k_total").textContent = 95.556
-      document.getElementById("k_alerts").textContent = 314.775     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_total").textContent = 99.007
+      document.getElementById("k_alerts").textContent = 318.226     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
