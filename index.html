@@ -203,7 +203,7 @@
       gap:10px;
     }
     .kpi .k-label{
-      font-size:12px;
+      font-size:14px;
       color:var(--muted);
       font-weight:700;
       letter-spacing:.2px;
@@ -786,7 +786,7 @@
             <div class="k-value mono" id="k_alerts">--</div>
             <div class="k-sub">Soma de público consolidado (todas as noites)</div>
           </div>
-          <div class="k-status"><span class="sig"></span><span>TOTAL GERAL</span></div>
+          <div class="k-status"><span class="sig"></span><span>TOTAL</span></div>
         </div>
         <div class="spark"><canvas id="sp_alerts"></canvas></div>
       </div>
@@ -865,6 +865,70 @@
         </div>
       </div>
 
+    </div>
+
+
+    <!-- KPIs (Público por noite) -->
+    <div class="kpi-row">
+      <div class="card kpi blue">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Pico de presença 27/12</div>
+            <div class="k-value mono" id="k_27">--</div>
+            <div class="k-sub">Número máximo registrado simultaneamente</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>TOTAL</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_now"></canvas></div>
+      </div>
+
+      <div class="card kpi green">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Pico de presença 28/12</div>
+            <div class="k-value mono" id="k_28">--</div>
+            <div class="k-sub">Número máximo registrado simultaneamente</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>TOTAL</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_peak"></canvas></div>
+      </div>
+
+      <div class="card kpi">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Pico de presença 29/12</div>
+            <div class="k-value mono" id="k_29">--</div>
+            <div class="k-sub">Número máximo registrado simultaneamente</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>TOTAL</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_total"></canvas></div>
+      </div>
+
+      <div class="card kpi amber">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Pico de presença 30/12</div>
+            <div class="k-value mono" id="k_30">--</div>
+            <div class="k-sub">Número máximo registrado simultaneamente</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>TOTAL</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_alerts"></canvas></div>
+      </div>
+
+      <div class="card kpi amber">
+        <div class="k-top">
+          <div>
+            <div class="k-label">Pico de presença 31/12</div>
+            <div class="k-value mono" id="k_31">--</div>
+            <div class="k-sub">Número máximo registrado simultaneamente</div>
+          </div>
+          <div class="k-status"><span class="sig"></span><span>TOTAL</span></div>
+        </div>
+        <div class="spark"><canvas id="sp_alerts"></canvas></div>
+      </div>
     </div>
 
     <!-- Ranking dos Maiores Públicos (replaces "fluxo agregado") -->
@@ -1908,11 +1972,17 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 18.304  //122.872
-      document.getElementById("k_peak").textContent = 125.638
-      document.getElementById("k_total").textContent = 100.477
-      document.getElementById("k_alerts").textContent = 319.696     //28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 0
+      document.getElementById("k_peak").textContent = 0
+      document.getElementById("k_total").textContent = 0
+      document.getElementById("k_alerts").textContent = 273.625     //28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
+
+      document.getElementById("k_27").textContent = 84001  
+      document.getElementById("k_28").textContent = 89147
+      document.getElementById("k_29").textContent = 100477
+      document.getElementById("k_30").textContent = 0      
+      document.getElementById("k_31").textContent = 0    
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
       document.getElementById("z_zero").textContent = state.smart.zeroCam;
@@ -2665,7 +2735,7 @@ async function pullBackend() {
     // 1) Mapeamento: "chave" -> "cor"
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
-      "Z01": "vinho",
+      "Z01": "azul",
       "Z02": "azul",
       "Z03": "azul",
       "Z04": "azul", 
@@ -2682,8 +2752,8 @@ async function pullBackend() {
       "Z14": "azul",
       "Z15": "azul",
       "Z16": "azul",
-      "Z18": "vinho",
-      "Z19": "laranja",
+      "Z18": "azul",
+      "Z19": "azul",
       "Z20": "azul",
       "Z21": "azul",
       "Arena (Intermediário)": "#ff3b8a"
