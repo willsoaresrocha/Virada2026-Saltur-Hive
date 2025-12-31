@@ -1448,7 +1448,7 @@ async function pullBackend() {
         ],
         "30/12": [
             { label: "Olodum", value: 48958 },
-            { label: "Alok", value: 59417 },
+            { label: "Alok", value: 71307 },
             { label: "Bell Marques", value: 0 },
             { label: "Belo", value: 0 },
             { label: "Felipe Amorim", value: 0 }
@@ -1464,9 +1464,9 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento extremamente intenso (+68% em 30 min).", meta:"ENTRADA AVENIDA · 22:00", level:"BAD" },
-        { msg:"Movimento intenso (+31% em 30 min).", meta:"ENTRADA ORLA 2 · 22:00", level:"BAD" },
-        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 22:00", level:"WARN" }
+        { msg:"Movimento extremamente intenso (+68% em 30 min).", meta:"ENTRADA AVENIDA · 23:00", level:"BAD" },
+        { msg:"Movimento intenso (+31% em 30 min).", meta:"ENTRADA ORLA 2 · 23:00", level:"BAD" },
+        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 23:00", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:35009, out:0, alerts:0 },
@@ -1972,16 +1972,16 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 59.417
-      document.getElementById("k_peak").textContent = 59.417
-      document.getElementById("k_total").textContent = 59.417
-      document.getElementById("k_alerts").textContent = 333.042   //273.625   28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 71.307
+      document.getElementById("k_peak").textContent = 75.379
+      document.getElementById("k_total").textContent = 71.307
+      document.getElementById("k_alerts").textContent = 344.932   //273.625   28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("k_27").textContent = 84001  
       document.getElementById("k_28").textContent = 89147
       document.getElementById("k_29").textContent = 100477
-      document.getElementById("k_30").textContent = 59.417      
+      document.getElementById("k_30").textContent = 71307      
       document.getElementById("k_31").textContent = 0    
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
@@ -2737,9 +2737,9 @@ async function pullBackend() {
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
       "Z02": "vinho",
-      "Z03": "vermelho",
-      "Z04": "vermelho", 
-      "Z05": "laranja",
+      "Z03": "vinho",
+      "Z04": "vinho", 
+      "Z05": "vermelho",
       "Z06": "vinho",
       "Z18": "azul",
       "Z07": "azul",
