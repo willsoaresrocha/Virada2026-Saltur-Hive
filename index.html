@@ -1454,7 +1454,7 @@ async function pullBackend() {
             { label: "Belo", value: 51034 }
         ],
         "31/12": [
-            { label: "Xanddy Harmonia", value: 42378 },
+            { label: "Xanddy Harmonia", value: 55074 },
             { label: "Jorge e Mateus", value: 0 },
             { label: "Ivete Sangalo", value: 0 },
             { label: "Mari Fernandez", value: 0 },
@@ -1469,9 +1469,9 @@ async function pullBackend() {
         { msg:"Movimento baixo (+2% em 30 min)", meta:"SAÍDA · 20:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:15541, out:0, alerts:0 },
-        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:21045, out:0, alerts:0 },
-        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:1197, out:0, alerts:0 }        
+        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:24500, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:27047, out:0, alerts:0 },
+        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:8197, out:0, alerts:0 }        
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1972,17 +1972,17 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 42378
-      document.getElementById("k_peak").textContent = 42378
-      document.getElementById("k_total").textContent = 42378
-      document.getElementById("k_alerts").textContent = 436.952   //389.574   28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 55074
+      document.getElementById("k_peak").textContent = 55074
+      document.getElementById("k_total").textContent = 55074
+      document.getElementById("k_alerts").textContent = 444.648   //389.574   28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("k_27").textContent = 84001  
       document.getElementById("k_28").textContent = 89147
       document.getElementById("k_29").textContent = 100477
       document.getElementById("k_30").textContent = 98304      
-      document.getElementById("k_31").textContent = 49378    
+      document.getElementById("k_31").textContent = 55074    
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
       document.getElementById("z_zero").textContent = state.smart.zeroCam;
