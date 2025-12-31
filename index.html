@@ -782,7 +782,7 @@
       <div class="card kpi amber">
         <div class="k-top">
           <div>
-            <div class="k-label">Total de entradas acumuladas</div>
+            <div class="k-label">Somatório de Picos do evento</div>
             <div class="k-value mono" id="k_alerts">--</div>
             <div class="k-sub">Soma de público consolidado (todas as noites)</div>
           </div>
@@ -1464,9 +1464,9 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento baixo (+16% em 30 min).", meta:"ENTRADA AVENIDA · 05:00", level:"WARN" },
-        { msg:"Movimento moderado (+23% em 30 min).", meta:"ENTRADA ORLA 2 · 05:00", level:"WARN" },
-        { msg:"Movimento baixo (+6% em 30 min).", meta:"SAÍDA · 05:00", level:"WARN" }
+        { msg:"Aguardando início de operação (+0% em 30 min).", meta:"ENTRADA AVENIDA · --:--", level:"WARN" },
+        { msg:"Aguardando início de operação (+0% em 30 min).", meta:"ENTRADA ORLA 2 · --:--", level:"WARN" },
+        { msg:"Aguardando início de operação (+0% em 30 min).", meta:"SAÍDA · --:--", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:33078, out:0, alerts:0 },
@@ -1946,7 +1946,7 @@ async function pullBackend() {
         state.camsSaltur.push({
           id:`SALTUR_${i}`,
           name:`Câmera ${i}`,
-          status: (Math.random()<0.05) ? "OFF" : "ON",
+          status: (Math.random()<0.05) ? "ON" : "ON",
           now: rand(0, 620),
           peakNight: rand(450, 2200),
           peakAll: rand(900, 3800),
@@ -1972,9 +1972,9 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 14.777
-      document.getElementById("k_peak").textContent = 113.969
-      document.getElementById("k_total").textContent = 98.304
+      document.getElementById("k_now").textContent = 0
+      document.getElementById("k_peak").textContent = 0
+      document.getElementById("k_total").textContent = 0
       document.getElementById("k_alerts").textContent = 387.594   //273.625   28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
@@ -2735,15 +2735,15 @@ async function pullBackend() {
     // 1) Mapeamento: "chave" -> "cor"
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
-      "Z01": "vinho",
-      "Z02": "vinho",
-      "Z03": "vermelho",
-      "Z04": "vermelho", 
-      "Z05": "vermelho",
-      "Z06": "vinho",
+      "Z01": "azul",
+      "Z02": "azul",
+      "Z03": "azul",
+      "Z04": "azul", 
+      "Z05": "azul",
+      "Z06": "azul",
       "Z18": "azul",
-      "Z07": "laranja",
-      "Z09": "laranja",
+      "Z07": "azul",
+      "Z09": "azul",
       "Z08": "azul",
       "Z10": "azul",
       "Z11": "azul",
@@ -2752,10 +2752,10 @@ async function pullBackend() {
       "Z14": "azul",
       "Z15": "azul",
       "Z16": "azul",
-      "Z18": "vinho",
+      "Z18": "azul",
       "Z19": "azul",
       "Z20": "azul",
-      "Z21": "laranja",
+      "Z21": "azul",
       "Arena (Intermediário)": "#ff3b8a"
     };
 
