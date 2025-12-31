@@ -1451,7 +1451,7 @@ async function pullBackend() {
             { label: "Alok", value: 87333 },
             { label: "Bell Marques", value: 98304 },
             { label: "Felipe Amorim", value: 69379 },
-            { label: "Belo", value: 0 }
+            { label: "Belo", value: 51034 }
         ],
         "31/12": [
             { label: "Xanddy Harmonia", value: 0 },
@@ -1464,9 +1464,9 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento baixo (+5% em 30 min).", meta:"ENTRADA AVENIDA · 02:30", level:"WARN" },
-        { msg:"Movimento baixo (+2% em 30 min).", meta:"ENTRADA ORLA 2 · 02:30", level:"WARN" },
-        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 02:30", level:"WARN" }
+        { msg:"Movimento baixo (+7% em 30 min).", meta:"ENTRADA AVENIDA · 03:30", level:"WARN" },
+        { msg:"Movimento baixo (+3% em 30 min).", meta:"ENTRADA ORLA 2 · 03:30", level:"WARN" },
+        { msg:"Movimento baixo (+3% em 30 min).", meta:"SAÍDA · 03:30", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:33078, out:0, alerts:0 },
@@ -1972,7 +1972,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 47.714
+      document.getElementById("k_now").textContent = 51.034
       document.getElementById("k_peak").textContent = 113.969
       document.getElementById("k_total").textContent = 98.304
       document.getElementById("k_alerts").textContent = 387.594   //273.625   28/12 = 219.219 == 27/12 = 118.060
@@ -2744,13 +2744,13 @@ async function pullBackend() {
       "Z18": "azul",
       "Z07": "laranja",
       "Z09": "laranja",
-      "Z08": "laranja",
-      "Z10": "laranja",
-      "Z11": "laranja",
+      "Z08": "azul",
+      "Z10": "azul",
+      "Z11": "azul",
       "Z12": "azul",
       "Z13": "azul",
       "Z14": "azul",
-      "Z15": "laranja",
+      "Z15": "azul",
       "Z16": "azul",
       "Z18": "vinho",
       "Z19": "azul",
