@@ -1464,9 +1464,9 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento alto (+58% em 30 min).", meta:"ENTRADA AVENIDA · 00:00", level:"BAD" },
-        { msg:"Movimento intenso (+29% em 30 min).", meta:"ENTRADA ORLA 2 · 00:00", level:"BAD" },
-        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 00:00", level:"WARN" }
+        { msg:"Movimento baixo (+5% em 30 min).", meta:"ENTRADA AVENIDA · 01:00", level:"WARN" },
+        { msg:"Movimento baixo (+2% em 30 min).", meta:"ENTRADA ORLA 2 · 01:00", level:"WARN" },
+        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 01:00", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:35009, out:0, alerts:0 },
@@ -1972,7 +1972,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 98.304
+      document.getElementById("k_now").textContent = 69.379
       document.getElementById("k_peak").textContent = 103.969
       document.getElementById("k_total").textContent = 98.304
       document.getElementById("k_alerts").textContent = 377.594   //273.625   28/12 = 219.219 == 27/12 = 118.060
@@ -2737,20 +2737,20 @@ async function pullBackend() {
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
       "Z02": "vinho",
-      "Z03": "vinho",
-      "Z04": "vinho", 
-      "Z05": "vinho",
+      "Z03": "vermelho",
+      "Z04": "vermelho", 
+      "Z05": "vermelho",
       "Z06": "vinho",
       "Z18": "azul",
       "Z07": "laranja",
-      "Z09": "vermelho",
+      "Z09": "laranja",
       "Z08": "laranja",
       "Z10": "laranja",
-      "Z11": "vermelho",
+      "Z11": "laranja",
       "Z12": "azul",
       "Z13": "azul",
       "Z14": "azul",
-      "Z15": "vinho",
+      "Z15": "laranja",
       "Z16": "azul",
       "Z18": "vinho",
       "Z19": "azul",
