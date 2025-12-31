@@ -1450,8 +1450,8 @@ async function pullBackend() {
             { label: "Olodum", value: 48958 },
             { label: "Alok", value: 87333 },
             { label: "Bell Marques", value: 98304 },
-            { label: "Belo", value: 0 },
-            { label: "Felipe Amorim", value: 0 }
+            { label: "Felipe Amorim", value: 69379 },
+            { label: "Belo", value: 0 }
         ],
         "31/12": [
             { label: "Xanddy Harmonia", value: 0 },
@@ -1464,13 +1464,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento baixo (+5% em 30 min).", meta:"ENTRADA AVENIDA · 01:00", level:"WARN" },
-        { msg:"Movimento baixo (+2% em 30 min).", meta:"ENTRADA ORLA 2 · 01:00", level:"WARN" },
-        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 01:00", level:"WARN" }
+        { msg:"Movimento baixo (+5% em 30 min).", meta:"ENTRADA AVENIDA · 02:00", level:"WARN" },
+        { msg:"Movimento baixo (+2% em 30 min).", meta:"ENTRADA ORLA 2 · 02:00", level:"WARN" },
+        { msg:"Movimento baixo (+2% em 30 min).", meta:"SAÍDA · 02:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:35009, out:0, alerts:0 },
-        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:26248, out:0, alerts:0 },
+        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:33078, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:12544, out:0, alerts:0 },
         { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:11897, out:0, alerts:0 }        
       ],
       camsSaltur: [],
@@ -1972,7 +1972,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 69.379
+      document.getElementById("k_now").textContent = 63.372
       document.getElementById("k_peak").textContent = 103.969
       document.getElementById("k_total").textContent = 98.304
       document.getElementById("k_alerts").textContent = 377.594   //273.625   28/12 = 219.219 == 27/12 = 118.060
