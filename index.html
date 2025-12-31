@@ -1454,7 +1454,7 @@ async function pullBackend() {
             { label: "Belo", value: 51034 }
         ],
         "31/12": [
-            { label: "Xanddy Harmonia", value: 29343 },
+            { label: "Xanddy Harmonia", value: 42378 },
             { label: "Jorge e Mateus", value: 0 },
             { label: "Ivete Sangalo", value: 0 },
             { label: "Mari Fernandez", value: 0 },
@@ -1464,13 +1464,13 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento alto (+29% em 30 min).", meta:"ENTRADA AVENIDA · 19:30", level:"WARN" },
-        { msg:"Movimento alto (+19% em 30 min).", meta:"ENTRADA ORLA 2 · 19:30", level:"WARN" },
-        { msg:"Movimento baixo (+2% em 30 min)", meta:"SAÍDA · 19:30", level:"WARN" }
+        { msg:"Movimento alto (+35% em 30 min).", meta:"ENTRADA AVENIDA · 20:00", level:"WARN" },
+        { msg:"Movimento alto (+24% em 30 min).", meta:"ENTRADA ORLA 2 · 20:00", level:"WARN" },
+        { msg:"Movimento baixo (+2% em 30 min)", meta:"SAÍDA · 20:00", level:"WARN" }
       ],
       topCams15: [
-        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:5241, out:0, alerts:0 },
-        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:2145, out:0, alerts:0 },
+        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:15541, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:21045, out:0, alerts:0 },
         { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:1197, out:0, alerts:0 }        
       ],
       camsSaltur: [],
@@ -1972,17 +1972,17 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 29343
-      document.getElementById("k_peak").textContent = 29343
-      document.getElementById("k_total").textContent = 29343
-      document.getElementById("k_alerts").textContent = 418.917   //389.574   28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 42378
+      document.getElementById("k_peak").textContent = 42378
+      document.getElementById("k_total").textContent = 42378
+      document.getElementById("k_alerts").textContent = 436.952   //389.574   28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("k_27").textContent = 84001  
       document.getElementById("k_28").textContent = 89147
       document.getElementById("k_29").textContent = 100477
       document.getElementById("k_30").textContent = 98304      
-      document.getElementById("k_31").textContent = 29343    
+      document.getElementById("k_31").textContent = 49378    
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
       document.getElementById("z_zero").textContent = state.smart.zeroCam;
@@ -2737,25 +2737,25 @@ async function pullBackend() {
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
       "Z02": "vermelho",
-      "Z03": "laranja",
-      "Z04": "laranja", 
-      "Z05": "azul",
-      "Z06": "laranja",
+      "Z03": "vermelho",
+      "Z04": "vermelho", 
+      "Z05": "vermelho",
+      "Z06": "vermelho",
       "Z18": "azul",
-      "Z07": "azul",
-      "Z09": "azul",
-      "Z08": "azul",
-      "Z10": "azul",
-      "Z11": "azul",
+      "Z07": "laranja",
+      "Z09": "laranja",
+      "Z08": "laranja",
+      "Z10": "laranja",
+      "Z11": "laranja",
       "Z12": "azul",
       "Z13": "azul",
       "Z14": "azul",
-      "Z15": "azul",
+      "Z15": "laranja",
       "Z16": "azul",
-      "Z18": "laranja",
+      "Z18": "vermelho",
       "Z19": "azul",
       "Z20": "azul",
-      "Z21": "azul",
+      "Z21": "laranja",
       "Arena (Intermediário)": "#ff3b8a"
     };
 
