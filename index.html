@@ -1456,7 +1456,7 @@ async function pullBackend() {
         "31/12": [
             { label: "Xanddy Harmonia", value: 55074 },
             { label: "Jorge e Mateus", value: 149479 },
-            { label: "Ivete Sangalo", value: 210904 },
+            { label: "Ivete Sangalo", value: 248611 },
             { label: "Mari Fernandez", value: 0 },
             { label: "Manu Bahtidão", value: 0 },
             { label: "Timbalada", value: 0 }
@@ -1464,14 +1464,14 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento alto (+65% em 30 min).", meta:"ENTRADA AVENIDA · 00:30", level:"BAD" },
-        { msg:"Movimento moderado (+61% em 30 min).", meta:"ENTRADA ORLA 2 · 00:30", level:"BAD" },
-        { msg:"Movimento baixo (+6% em 30 min)", meta:"SAÍDA · 00:30", level:"WARN" }
+        { msg:"Movimento moderado (+35% em 30 min).", meta:"ENTRADA AVENIDA · 01:30", level:"BAD" },
+        { msg:"Movimento moderado (+31% em 30 min).", meta:"ENTRADA ORLA 2 · 01:30", level:"WARN" },
+        { msg:"Movimento alto (+29% em 30 min)", meta:"SAÍDA · 01:30", level:"BAD" }
       ],
       topCams15: [
-        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:24500, out:0, alerts:0 },
-        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:27047, out:0, alerts:0 },
-        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:8197, out:0, alerts:0 }        
+        { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:48970, out:0, alerts:0 },
+        { cam:"Cam 02 ", local:"Z01 — Arena (Frente do palco principal)", in:37047, out:0, alerts:0 },
+        { cam:"Cam 03 ", local:"Z02 — Arena (Intermediário)", in:38197, out:0, alerts:0 }        
       ],
       camsSaltur: [],
       camsSSP: [],
@@ -1972,10 +1972,10 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 210904
-      document.getElementById("k_peak").textContent = 212658
-      document.getElementById("k_total").textContent = 210904
-      document.getElementById("k_alerts").textContent = 708.347   //495.689   28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 141094
+      document.getElementById("k_peak").textContent = 250011
+      document.getElementById("k_total").textContent = 248611
+      document.getElementById("k_alerts").textContent = 744.301   //495.689   28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
       document.getElementById("k_27").textContent = 84.001  
@@ -2744,7 +2744,7 @@ async function pullBackend() {
       "Z18": "vinho",
       "Z07": "vinho",
       "Z09": "vinho",
-      "Z08": "vinho",
+      "Z08": "vermelho",
       "Z10": "vinho",
       "Z11": "vinho",
       "Z12": "azul",
@@ -2755,7 +2755,7 @@ async function pullBackend() {
       "Z18": "vinho",
       "Z19": "vermelho",
       "Z20": "vinho",
-      "Z21": "laranja",
+      "Z21": "azul",
       "Arena (Intermediário)": "#ff3b8a"
     };
 
