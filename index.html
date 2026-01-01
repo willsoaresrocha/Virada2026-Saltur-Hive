@@ -1464,9 +1464,9 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento baixo (-7% em 30 min).", meta:"ENTRADA AVENIDA · 04:00", level:"WARN" },
-        { msg:"Movimento baixo (-5% em 30 min).", meta:"ENTRADA ORLA 2 · 04:00", level:"WARN" },
-        { msg:"Movimento baixo (-32% em 30 min)", meta:"SAÍDA · 04:00", level:"WARN" }
+        { msg:"Movimento baixo (-40% em 30 min).", meta:"ENTRADA AVENIDA · 05:00", level:"WARN" },
+        { msg:"Movimento baixo (-38% em 30 min).", meta:"ENTRADA ORLA 2 · 05:00", level:"WARN" },
+        { msg:"Movimento baixo (-2% em 30 min)", meta:"SAÍDA · 05:00", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:48970, out:0, alerts:0 },
@@ -1972,7 +1972,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 64982
+      document.getElementById("k_now").textContent = 37031
       document.getElementById("k_peak").textContent = 250011
       document.getElementById("k_total").textContent = 248611
       document.getElementById("k_alerts").textContent = 744.301   //495.689   28/12 = 219.219 == 27/12 = 118.060
@@ -2736,21 +2736,21 @@ async function pullBackend() {
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
-      "Z02": "vinho",
-      "Z03": "vinho",
-      "Z04": "vinho", 
-      "Z05": "vermelho",
+      "Z02": "laranja",
+      "Z03": "laranja",
+      "Z04": "laranja", 
+      "Z05": "laranja",
       "Z06": "vinho",
-      "Z18": "laranja",
-      "Z07": "laranja",
-      "Z09": "laranja",
-      "Z08": "laranja",
-      "Z10": "laranja",
-      "Z11": "laranja",
+      "Z18": "azul",
+      "Z07": "azul",
+      "Z09": "azul",
+      "Z08": "azul",
+      "Z10": "azul",
+      "Z11": "azul",
       "Z12": "azul",
-      "Z13": "laranja",
+      "Z13": "azul",
       "Z14": "azul",
-      "Z15": "laranja",
+      "Z15": "azul",
       "Z16": "azul",
       "Z18": "vinho",
       "Z19": "vermelho",
