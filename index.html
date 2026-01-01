@@ -1455,7 +1455,7 @@ async function pullBackend() {
         ],
         "31/12": [
             { label: "Xanddy Harmonia", value: 55074 },
-            { label: "Jorge e Mateus", value: 0 },
+            { label: "Jorge e Mateus", value: 71919 },
             { label: "Ivete Sangalo", value: 0 },
             { label: "Mari Fernandez", value: 0 },
             { label: "Manu Bahtidão", value: 0 },
@@ -1464,9 +1464,9 @@ async function pullBackend() {
         },
 
       alerts: [
-        { msg:"Movimento alto (+35% em 30 min).", meta:"ENTRADA AVENIDA · 20:30", level:"WARN" },
-        { msg:"Movimento alto (+24% em 30 min).", meta:"ENTRADA ORLA 2 · 20:30", level:"WARN" },
-        { msg:"Movimento baixo (+2% em 30 min)", meta:"SAÍDA · 20:30", level:"WARN" }
+        { msg:"Movimento extremamente intenso!! (+69% em 30 min).", meta:"ENTRADA AVENIDA · 21:30", level:"BAD" },
+        { msg:"Movimento extremamente intenso!! (+65% em 30 min).", meta:"ENTRADA ORLA 2 · 21:30", level:"BAD" },
+        { msg:"Movimento baixo (+3% em 30 min)", meta:"SAÍDA · 21:30", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:24500, out:0, alerts:0 },
@@ -1972,17 +1972,17 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 55074
-      document.getElementById("k_peak").textContent = 55854
-      document.getElementById("k_total").textContent = 55074
-      document.getElementById("k_alerts").textContent = 444.648   //389.574   28/12 = 219.219 == 27/12 = 118.060
+      document.getElementById("k_now").textContent = 71979
+      document.getElementById("k_peak").textContent = 72174
+      document.getElementById("k_total").textContent = 71979
+      document.getElementById("k_alerts").textContent = 567.608   //495.689   28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
 
-      document.getElementById("k_27").textContent = 84001  
-      document.getElementById("k_28").textContent = 89147
-      document.getElementById("k_29").textContent = 100477
-      document.getElementById("k_30").textContent = 98304      
-      document.getElementById("k_31").textContent = 55074    
+      document.getElementById("k_27").textContent = 118.061  
+      document.getElementById("k_28").textContent = 120.367
+      document.getElementById("k_29").textContent = 125.638
+      document.getElementById("k_30").textContent = 116.781      
+      document.getElementById("k_31").textContent = 71.979     
 
       document.getElementById("z_pressure").textContent = state.smart.pressureZone;
       document.getElementById("z_zero").textContent = state.smart.zeroCam;
