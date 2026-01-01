@@ -1458,15 +1458,15 @@ async function pullBackend() {
             { label: "Jorge e Mateus", value: 149479 },
             { label: "Ivete Sangalo", value: 248611 },
             { label: "Mari Fernandez", value: 102094 },
-            { label: "Manu Bahtidão", value: 0 },
-            { label: "Timbalada", value: 0 }
+            { label: "Timbalada", value: 64982 },
+            { label: "Manu Bahtidão", value: 0 }
         ]
         },
 
       alerts: [
-        { msg:"Movimento moderado (-3% em 30 min).", meta:"ENTRADA AVENIDA · 03:00", level:"WARN" },
-        { msg:"Movimento moderado (-7% em 30 min).", meta:"ENTRADA ORLA 2 · 03:00", level:"WARN" },
-        { msg:"Movimento moderado (-12% em 30 min)", meta:"SAÍDA · 03:00", level:"WARN" }
+        { msg:"Movimento baixo (-7% em 30 min).", meta:"ENTRADA AVENIDA · 04:00", level:"WARN" },
+        { msg:"Movimento baixo (-5% em 30 min).", meta:"ENTRADA ORLA 2 · 04:00", level:"WARN" },
+        { msg:"Movimento baixo (-32% em 30 min)", meta:"SAÍDA · 04:00", level:"WARN" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:48970, out:0, alerts:0 },
@@ -1972,7 +1972,7 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 91910
+      document.getElementById("k_now").textContent = 64982
       document.getElementById("k_peak").textContent = 250011
       document.getElementById("k_total").textContent = 248611
       document.getElementById("k_alerts").textContent = 744.301   //495.689   28/12 = 219.219 == 27/12 = 118.060
@@ -2741,10 +2741,10 @@ async function pullBackend() {
       "Z04": "vinho", 
       "Z05": "vermelho",
       "Z06": "vinho",
-      "Z18": "vinho",
-      "Z07": "vermelho",
-      "Z09": "vermelho",
-      "Z08": "vermelho",
+      "Z18": "laranja",
+      "Z07": "laranja",
+      "Z09": "laranja",
+      "Z08": "laranja",
       "Z10": "laranja",
       "Z11": "laranja",
       "Z12": "azul",
@@ -2754,7 +2754,7 @@ async function pullBackend() {
       "Z16": "azul",
       "Z18": "vinho",
       "Z19": "vermelho",
-      "Z20": "vinho",
+      "Z20": "laranja",
       "Z21": "azul",
       "Arena (Intermediário)": "#ff3b8a"
     };
