@@ -770,7 +770,7 @@
       <div class="card kpi">
         <div class="k-top">
           <div>
-            <div class="k-label">Pico da noite</div>
+            <div class="k-label">Pico do evento</div>
             <div class="k-value mono" id="k_total">--</div>
             <div class="k-sub">Maior valor observado (noite atual)</div>
           </div>
@@ -945,7 +945,7 @@
     <section id="mapaCalor" class="card pad" id="cardHeatmap">
       <div class="card-title">
         <div>
-          <h3>Mapa de calor por setor</h3>
+          <h3>Mapa de calor por setor - REFERÊNCIA DO DIA MAIS INTENSO - 31/12/2025</h3>
           <div class="hint">Intensidade por região (atualiza automaticamente).</div>
         </div>
         <div class="chip" id="heatLegendChip">
@@ -1218,9 +1218,9 @@
 
           <div class="smart-grid" style="margin-top:10px;">
             <div class="card pad" style="border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
-              <div class="k-label">Total no período</div>
+              <div class="k-label">Média simultânea no período</div>
               <div class="k-value mono" id="zoneKpiTotal">--</div>
-              <div class="k-sub">Somatório estimado (todas as câmeras da zona).</div>
+              <div class="k-sub">Média de pessoas simultâneas por slot (30 min).</div>
             </div>
             <div class="card pad" style="border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.18);">
               <div class="k-label">Média por dia</div>
@@ -1459,14 +1459,14 @@ async function pullBackend() {
             { label: "Ivete Sangalo", value: 248611 },
             { label: "Mari Fernandez", value: 102094 },
             { label: "Timbalada", value: 64982 },
-            { label: "Manu Bahtidão", value: 18002 }
+            { label: "Manu Bahtidão", value: 0 }
         ]
         },
 
       alerts: [
-        { msg:"Movimento baixo (-80% em 30 min).", meta:"ENTRADA AVENIDA · 06:30", level:"WARN" },
-        { msg:"Movimento baixo (-78% em 30 min).", meta:"ENTRADA ORLA 2 · 06:30", level:"WARN" },
-        { msg:"Movimento baixo (-32% em 30 min)", meta:"SAÍDA · 06:30", level:"WARN" }
+        { msg:"Maior pico de movimentação (-91% em 90 min).", meta:"ENTRADA AVENIDA · 31/12/25 ·   22:00 - 00:30", level:"BAD" },
+        { msg:"Maior pico de movimentação (-87% em 90 min).", meta:"ENTRADA ORLA · 31/12/25 ·   22:00 - 00:30", level:"BAD" },
+        { msg:"Zona de maior movimento durante o evento", meta:"Z01 — Arena (Frente do palco principal)", level:"BAD" }
       ],
       topCams15: [
         { cam:"Cam 01",  local:"Z01 — Arena (Frente do palco principal)", in:48970, out:0, alerts:0 },
@@ -1504,8 +1504,7 @@ async function pullBackend() {
     const ALL_BANDS_VIRADA = [...state.allBands];
 
     const ALL_BANDS_EVENTS = {
-      "25/12": [{ label: "Frei Gilson (25/12)", value: 95380 }],       // placeholder
-      "26/12": [{ label: "Roberto Carlos (26/12)", value: 0 }],   // placeholder
+ 
       "27-31/12": ALL_BANDS_VIRADA
     };
 
@@ -1940,24 +1939,29 @@ async function pullBackend() {
 
     // Build camera inventories
     function initCameras(){
-      // SALTUR 40
-      state.camsSaltur = [];
-      for(let i=1;i<=40;i++){
-        state.camsSaltur.push({
-          id:`SALTUR_${i}`,
-          name:`Câmera ${i}`,
-          status: (Math.random()<0.05) ? "ON" : "ON",
-          now: rand(0, 620),
-          peakNight: rand(450, 2200),
-          peakAll: rand(900, 3800),
-          alerts: rand(0, 4)
-        });
-      }
-      // SSP 8
-      state.camsSSP = [];
-      // SSP (setores) — vem do XLS + manual override
-      rebuildSSPSectors();
+      // Inventário SALTUR a partir do mapeamento de zonas (inclui IDs > 40 quando existir no mapa)
+      const ids = Object.keys(CAM_SERIES_MAP).sort((a,b)=>a.localeCompare(b, undefined, { numeric:true, sensitivity:"base" }));
+      const slot = MANUAL_HEATMAP_SLOT || floorToHalfHourHHMM(new Date());
 
+      state.camsSaltur = ids.map(cid=>{
+        const raw = cid.replace("SALTUR_","");
+        const peak = Number(CAM_SERIES_MAP[cid]?.peakNight || 0);
+        const nowVal = camValueAtSlot(cid, slot);
+
+        return {
+          id: cid,
+          name: `Câmera ${raw}`,
+          status: "ON",
+          now: nowVal,
+          peakNight: peak,
+          peakAll: Math.round(peak * 1.12),
+          alerts: 0
+        };
+      });
+
+      // SSP permanece com os cards que já estão no XLS/placeholder
+      state.camsSSP = [];
+      rebuildSSPSectors();
       rebuildRankingTop10();
     }
 
@@ -1972,8 +1976,8 @@ async function pullBackend() {
        DOM RENDER (non-chart)  PESSOAS PRESENTES AGORA
        ============================================================ */
     function renderKPIs(){
-      document.getElementById("k_now").textContent = 1209
-      document.getElementById("k_peak").textContent = 250011
+      document.getElementById("k_now").textContent = 0
+      document.getElementById("k_peak").textContent = 0
       document.getElementById("k_total").textContent = 248611
       document.getElementById("k_alerts").textContent = 744.301   //495.689   28/12 = 219.219 == 27/12 = 118.060
       document.getElementById("k_status").textContent = state.kpis.status;
@@ -2129,9 +2133,10 @@ async function pullBackend() {
     }
 
     function createSpark(canvasId, color){
-      const ctx = document.getElementById(canvasId);
+      const canvas = document.getElementById(canvasId);
+      if(!canvas) return null; // evita Chart.js tentar ler id de null
       const data = Array.from({length:22}, (_,i)=>rand(40,110));
-      return new Chart(ctx, {
+      return new Chart(canvas, {
         type:"line",
         data:{
           labels:data.map((_,i)=>i),
@@ -2146,6 +2151,7 @@ async function pullBackend() {
         options:sparkOptions()
       });
     }
+
 
     // "day" = mantém a ordem definida em state.allBands (ex.: agrupado por dia)
     // "ranking" = ordena por quantidade (desc)
@@ -2353,10 +2359,13 @@ async function pullBackend() {
 
 
     function createNightChart(canvasId, nightKey, color){
-      const ctx = document.getElementById(canvasId);
-      const items = state.nights[nightKey];
-      
-      return new Chart(ctx,{
+      const canvas = document.getElementById(canvasId);
+      if(!canvas) return null; // se não existe na página, não cria
+
+      const items = state.nights[nightKey] || [];
+      if(!items.length) return null;
+
+      return new Chart(canvas,{
         type:"bar",
         data:{
           labels: items.map(x=>x.label),
@@ -2369,19 +2378,13 @@ async function pullBackend() {
         options:{
           ...baseChartOptions(),
           scales:{
-            x:{
-              ticks:{ color:"rgba(255,255,255,.75)", maxRotation:0, autoSkip:false },
-              grid:{ color:"rgba(255,255,255,.06)" }
-            },
-            y:{
-              ticks:{ color:"rgba(255,255,255,.55)" },
-              grid:{ color:"rgba(255,255,255,.06)" },
-              beginAtZero:true
-            }
+            x:{ ticks:{ color:"rgba(255,255,255,.75)", maxRotation:0, autoSkip:false }, grid:{ color:"rgba(255,255,255,.06)" } },
+            y:{ ticks:{ color:"rgba(255,255,255,.55)" }, grid:{ color:"rgba(255,255,255,.06)" }, beginAtZero:true }
           }
         }
       });
     }
+
 
 
     function createCamModalChart(labels, data){
@@ -2602,34 +2605,235 @@ async function pullBackend() {
     // ============================================================
 
     const MANUAL_ZONE_SERIES_27 = [
-      { t:"18:00", TOTAL_PRESENTE:0, Z01:0, Z02:0, Z03:0, Z04:0, Z05:0, Z06:0, Z07:0, Z08:0, Z09:0, Z10:0, Z11:0, Z12:0, Z13:0, Z14:0, Z15:0, Z16:0, Z17:0, Z18:0, Z19:0, Z20:0, Z21:0 },
-      { t:"18:30", TOTAL_PRESENTE:8058, Z01:2355, Z02:2133, Z03:1328, Z04:392, Z05:376, Z06:300, Z07:166, Z08:410, Z09:56, Z10:23, Z11:66, Z12:63, Z13:38, Z14:23, Z15:83, Z16:156, Z17:0, Z18:53, Z19:0, Z20:28, Z21:9 },
-      { t:"19:00", TOTAL_PRESENTE:16211, Z01:4876, Z02:4266, Z03:2565, Z04:828, Z05:762, Z06:609, Z07:309, Z08:820, Z09:111, Z10:46, Z11:131, Z12:122, Z13:75, Z14:47, Z15:155, Z16:313, Z17:0, Z18:102, Z19:0, Z20:56, Z21:18 },
-      { t:"19:30", TOTAL_PRESENTE:24415, Z01:7464, Z02:6400, Z03:3770, Z04:1283, Z05:1152, Z06:921, Z07:446, Z08:1231, Z09:167, Z10:69, Z11:197, Z12:180, Z13:113, Z14:70, Z15:223, Z16:469, Z17:0, Z18:149, Z19:0, Z20:84, Z21:27 },
-      { t:"20:00", TOTAL_PRESENTE:32649, Z01:10097, Z02:8533, Z03:4955, Z04:1750, Z05:1545, Z06:1236, Z07:577, Z08:1641, Z09:222, Z10:92, Z11:263, Z12:236, Z13:150, Z14:94, Z15:289, Z16:625, Z17:0, Z18:196, Z19:0, Z20:112, Z21:36 },
-      { t:"20:30", TOTAL_PRESENTE:40910, Z01:12762, Z02:10666, Z03:6125, Z04:2227, Z05:1939, Z06:1552, Z07:706, Z08:2051, Z09:278, Z10:115, Z11:328, Z12:292, Z13:188, Z14:117, Z15:353, Z16:781, Z17:0, Z18:243, Z19:0, Z20:141, Z21:46 },
-      { t:"21:00", TOTAL_PRESENTE:49193, Z01:15455, Z02:12799, Z03:7284, Z04:2712, Z05:2336, Z06:1869, Z07:832, Z08:2462, Z09:333, Z10:138, Z11:394, Z12:347, Z13:225, Z14:140, Z15:416, Z16:938, Z17:0, Z18:289, Z19:0, Z20:169, Z21:55 },
-      { t:"21:30", TOTAL_PRESENTE:56638, Z01:18010, Z02:14807, Z03:8365, Z04:3174, Z05:2710, Z06:2168, Z07:948, Z08:2553, Z09:386, Z10:160, Z11:456, Z12:398, Z13:260, Z14:163, Z15:474, Z16:1016, Z17:0, Z18:332, Z19:0, Z20:195, Z21:63 },
-      { t:"22:00", TOTAL_PRESENTE:64098, Z01:20582, Z02:16815, Z03:9439, Z04:3641, Z05:3085, Z06:2468, Z07:1063, Z08:2644, Z09:438, Z10:182, Z11:517, Z12:449, Z13:296, Z14:185, Z15:532, Z16:1094, Z17:0, Z18:374, Z19:0, Z20:222, Z21:72 },
-      { t:"22:30", TOTAL_PRESENTE:71570, Z01:23170, Z02:18822, Z03:10507, Z04:4113, Z05:3461, Z06:2769, Z07:1177, Z08:2735, Z09:490, Z10:203, Z11:579, Z12:500, Z13:331, Z14:207, Z15:589, Z16:1172, Z17:0, Z18:417, Z19:0, Z20:248, Z21:80 },
-      { t:"23:00", TOTAL_PRESENTE:74674, Z01:24273, Z02:19675, Z03:10958, Z04:4314, Z05:3621, Z06:2897, Z07:1225, Z08:2735, Z09:512, Z10:212, Z11:605, Z12:522, Z13:346, Z14:216, Z15:613, Z16:1172, Z17:0, Z18:435, Z19:0, Z20:259, Z21:84 },
-      { t:"23:30", TOTAL_PRESENTE:77784, Z01:25379, Z02:20527, Z03:11409, Z04:4517, Z05:3781, Z06:3026, Z07:1272, Z08:2735, Z09:535, Z10:222, Z11:632, Z12:543, Z13:361, Z14:225, Z15:637, Z16:1172, Z17:0, Z18:452, Z19:0, Z20:271, Z21:88 },
-      { t:"00:00", TOTAL_PRESENTE:80891, Z01:26486, Z02:21380, Z03:11858, Z04:4719, Z05:3942, Z06:3154, Z07:1320, Z08:2735, Z09:557, Z10:231, Z11:658, Z12:565, Z13:376, Z14:235, Z15:660, Z16:1172, Z17:0, Z18:470, Z19:0, Z20:282, Z21:91 },
-      { t:"00:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"01:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"01:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"02:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"02:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"03:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"03:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"04:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"04:30", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 },
-      { t:"05:00", TOTAL_PRESENTE:84000, Z01:27596, Z02:22232, Z03:12307, Z04:4923, Z05:4102, Z06:3282, Z07:1367, Z08:2735, Z09:579, Z10:240, Z11:684, Z12:586, Z13:391, Z14:244, Z15:684, Z16:1172, Z17:0, Z18:488, Z19:0, Z20:293, Z21:95 }
+      { t:"18:00", TOTAL_PRESENTE:0, Z01:0, Z02:0, Z03:0, Z04:0, Z05:0, Z06:0, Z07:0, Z08:0,
+          Z09:0, Z10:0, Z11:0, Z12:0, Z13:0, Z14:0, Z15:0, Z16:0,
+          Z17:0, Z18:0, Z19:0, Z20:0, Z21:0 },
+
+      { t:"18:30", TOTAL_PRESENTE:6000, Z01:1754, Z02:1588, Z03:989, Z04:292, Z05:280, Z06:223, Z07:124, Z08:305,
+          Z09:42, Z10:17, Z11:49, Z12:47, Z13:28, Z14:17, Z15:62, Z16:116,
+          Z17:0, Z18:39, Z19:0, Z20:21, Z21:7 },
+
+      { t:"19:00", TOTAL_PRESENTE:12000, Z01:3609, Z02:3158, Z03:1899, Z04:613, Z05:564, Z06:451, Z07:229, Z08:607,
+          Z09:82, Z10:33, Z11:97, Z12:90, Z13:56, Z14:35, Z15:115, Z16:232,
+          Z17:0, Z18:76, Z19:0, Z20:41, Z21:13 },
+
+      { t:"19:30", TOTAL_PRESENTE:25000, Z01:7643, Z02:6553, Z03:3860, Z04:1314, Z05:1180, Z06:943, Z07:457, Z08:1260,
+          Z09:170, Z10:71, Z11:202, Z12:184, Z13:116, Z14:72, Z15:228, Z16:480,
+          Z17:0, Z18:153, Z19:0, Z20:86, Z21:28 },
+
+      { t:"20:00", TOTAL_PRESENTE:45000, Z01:13917, Z02:11761, Z03:6829, Z04:2412, Z05:2129, Z06:1704, Z07:795, Z08:2262,
+          Z09:307, Z10:127, Z11:362, Z12:325, Z13:207, Z14:130, Z15:398, Z16:861,
+          Z17:0, Z18:270, Z19:0, Z20:154, Z21:50 },
+
+      { t:"20:30", TOTAL_PRESENTE:70000, Z01:21837, Z02:18250, Z03:10480, Z04:3811, Z05:3318, Z06:2656, Z07:1208, Z08:3509,
+          Z09:476, Z10:197, Z11:561, Z12:500, Z13:322, Z14:200, Z15:603, Z16:1336,
+          Z17:0, Z18:416, Z19:0, Z20:241, Z21:79 },
+
+      { t:"21:00", TOTAL_PRESENTE:100000, Z01:31416, Z02:26018, Z03:14807, Z04:5513, Z05:4749, Z06:3800, Z07:1691, Z08:5004,
+          Z09:677, Z10:280, Z11:801, Z12:706, Z13:457, Z14:285, Z15:846, Z16:1907,
+          Z17:0, Z18:587, Z19:0, Z20:344, Z21:112 },
+
+      { t:"21:30", TOTAL_PRESENTE:140000, Z01:44518, Z02:36601, Z03:20682, Z04:7837, Z05:6697, Z06:5363, Z07:2346, Z08:6314,
+          Z09:955, Z10:395, Z11:1125, Z12:982, Z13:642, Z14:402, Z15:1172, Z16:2511,
+          Z17:0, Z18:821, Z19:0, Z20:481, Z21:156 },
+
+      { t:"22:00", TOTAL_PRESENTE:180000, Z01:57798, Z02:47220, Z03:26555, Z04:10249, Z05:8683, Z06:6945, Z07:2993, Z08:7445,
+          Z09:1233, Z10:512, Z11:1455, Z12:1265, Z13:834, Z14:521, Z15:1494, Z16:3072,
+          Z17:0, Z18:1050, Z19:0, Z20:623, Z21:202 },
+
+      { t:"22:30", TOTAL_PRESENTE:210000, Z01:67985, Z02:55227, Z03:30807, Z04:12083, Z05:10162, Z06:8124, Z07:3452, Z08:8019,
+          Z09:1436, Z10:595, Z11:1695, Z12:1464, Z13:969, Z14:605, Z15:1728, Z16:3439,
+          Z17:0, Z18:1224, Z19:0, Z20:728, Z21:235 },
+
+      { t:"23:00", TOTAL_PRESENTE:230000, Z01:74762, Z02:60600, Z03:33741, Z04:13278, Z05:11142, Z06:8901, Z07:3766, Z08:8415,
+          Z09:1577, Z10:654, Z11:1867, Z12:1611, Z13:1068, Z14:667, Z15:1888, Z16:3610,
+          Z17:0, Z18:1340, Z19:0, Z20:798, Z21:259 },
+
+      { t:"23:30", TOTAL_PRESENTE:242000, Z01:78959, Z02:63863, Z03:35502, Z04:13972, Z05:11733, Z06:9449, Z07:3998, Z08:8854,
+          Z09:1658, Z10:686, Z11:1949, Z12:1679, Z13:1117, Z14:698, Z15:1983, Z16:3646,
+          Z17:0, Z18:1406, Z19:0, Z20:843, Z21:275 },
+
+      { t:"00:00", TOTAL_PRESENTE:247000, Z01:80875, Z02:65284, Z03:36559, Z04:14403, Z05:12069, Z06:9670, Z07:4056, Z08:8965,
+          Z09:1723, Z10:713, Z11:2030, Z12:1743, Z13:1160, Z14:724, Z15:2015, Z16:3579,
+          Z17:0, Z18:1435, Z19:0, Z20:861, Z21:278 },
+
+      { t:"00:30", TOTAL_PRESENTE:248611, Z01:81675, Z02:65799, Z03:36856, Z04:14570, Z05:12141, Z06:9714, Z07:4045, Z08:8095,
+          Z09:1714, Z10:710, Z11:2025, Z12:1734, Z13:1158, Z14:723, Z15:2024, Z16:3469,
+          Z17:0, Z18:1444, Z19:0, Z20:867, Z21:281 },
+
+      // queda (01:00 em diante)
+      { t:"01:00", TOTAL_PRESENTE:240000, Z01:78846, Z02:63520, Z03:35525, Z04:14067, Z05:11720, Z06:9377, Z07:3906, Z08:7854,
+          Z09:1651, Z10:685, Z11:1954, Z12:1673, Z13:1117, Z14:698, Z15:1954, Z16:3349,
+          Z17:0, Z18:1394, Z19:0, Z20:837, Z21:271 },
+
+      { t:"01:30", TOTAL_PRESENTE:220000, Z01:72275, Z02:58227, Z03:32567, Z04:12895, Z05:10744, Z06:8597, Z07:3581, Z08:7204,
+          Z09:1514, Z10:628, Z11:1792, Z12:1534, Z13:1023, Z14:639, Z15:1791, Z16:3070,
+          Z17:0, Z18:1278, Z19:0, Z20:767, Z21:249 },
+
+      { t:"02:00", TOTAL_PRESENTE:185000, Z01:60778, Z02:48963, Z03:27366, Z04:10837, Z05:9035, Z06:7236, Z07:3012, Z08:6127,
+          Z09:1288, Z10:534, Z11:1525, Z12:1304, Z13:869, Z14:543, Z15:1506, Z16:2581,
+          Z17:0, Z18:1075, Z19:0, Z20:645, Z21:209 },
+
+      { t:"02:30", TOTAL_PRESENTE:150000, Z01:49279, Z02:39700, Z03:22165, Z04:8778, Z05:7326, Z06:5875, Z07:2444, Z08:4950,
+          Z09:1044, Z10:433, Z11:1258, Z12:1074, Z13:716, Z14:448, Z15:1221, Z16:2093,
+          Z17:0, Z18:871, Z19:0, Z20:523, Z21:170 },
+
+      { t:"03:00", TOTAL_PRESENTE:110000, Z01:36138, Z02:29113, Z03:16260, Z04:6443, Z05:5372, Z06:4300, Z07:1792, Z08:3630,
+          Z09:764, Z10:317, Z11:920, Z12:784, Z13:524, Z14:327, Z15:896, Z16:1535,
+          Z17:0, Z18:639, Z19:0, Z20:384, Z21:124 },
+
+      { t:"03:30", TOTAL_PRESENTE:80000, Z01:26282, Z02:21173, Z03:11824, Z04:4686, Z05:3907, Z06:3127, Z07:1303, Z08:2638,
+          Z09:555, Z10:230, Z11:667, Z12:568, Z13:380, Z14:237, Z15:651, Z16:1116,
+          Z17:0, Z18:465, Z19:0, Z20:279, Z21:90 },
+
+      { t:"04:00", TOTAL_PRESENTE:55000, Z01:18069, Z02:14557, Z03:8135, Z04:3220, Z05:2686, Z06:2150, Z07:896, Z08:1814,
+          Z09:382, Z10:159, Z11:460, Z12:392, Z13:261, Z14:163, Z15:448, Z16:767,
+          Z17:0, Z18:320, Z19:0, Z20:192, Z21:62 },
+
+      { t:"04:30", TOTAL_PRESENTE:35000, Z01:11498, Z02:9263, Z03:5177, Z04:2050, Z05:1710, Z06:1369, Z07:571, Z08:1155,
+          Z09:243, Z10:101, Z11:293, Z12:250, Z13:166, Z14:104, Z15:285, Z16:488,
+          Z17:0, Z18:203, Z19:0, Z20:122, Z21:40 },
+
+      { t:"05:00", TOTAL_PRESENTE:17000, Z01:5586, Z02:4499, Z03:2491, Z04:994, Z05:830, Z06:665, Z07:276, Z08:557,
+          Z09:118, Z10:49, Z11:142, Z12:121, Z13:81, Z14:49, Z15:138, Z16:237,
+          Z17:0, Z18:99, Z19:0, Z20:59, Z21:19 }
     ];
 
-    const MANUAL_ZONE_MAP_27 = Object.fromEntries(MANUAL_ZONE_SERIES_27.map(r=>[r.t, r]));
 
-    // Período solicitado (placeholders): 12/05/2025 até 31/05/2025
+
+    
+    // ============================================================
+    // NORMALIZAÇÃO — DIA 31 (pico 248.611 presentes)
+    // Objetivo: preservar o "desenho" do mapa (proporções por zona)
+    // e escalar os números para o pico total informado pelo cliente.
+    // ============================================================
+    const TARGET_PEAK_TOTAL_PRESENTE = 248611;
+
+    function sumZonesRow(row){
+      let s = 0;
+      for(const zid of Object.keys(ZONE_CAMERAS)){
+        s += Number(row?.[zid] || 0);
+      }
+      return s;
+    }
+
+    function scaleZoneSeriesToPeak(series, targetPeak){
+      const maxTotal = Math.max(...series.map(r => Number(r.TOTAL_PRESENTE || 0)));
+      const factor = (maxTotal > 0) ? (targetPeak / maxTotal) : 1;
+
+      return series.map(r => {
+        const out = { t: r.t };
+        for(const zid of Object.keys(ZONE_CAMERAS)){
+          out[zid] = Math.max(0, Math.round(Number(r?.[zid] || 0) * factor));
+        }
+        // Total sempre coerente com as zonas (evita "estouro" por arredondamento)
+        out.TOTAL_PRESENTE = sumZonesRow(out);
+        return out;
+      });
+    }
+
+    const ACTIVE_ZONE_SERIES = scaleZoneSeriesToPeak(MANUAL_ZONE_SERIES_27, TARGET_PEAK_TOTAL_PRESENTE);
+    const MANUAL_ZONE_MAP_27 = Object.fromEntries(ACTIVE_ZONE_SERIES.map(r=>[r.t, r]));
+
+    // ============================================================
+    // ENGENHARIA REVERSA — câmeras (SALTUR) a partir das zonas
+    // Cada valor de zona representa o somatório instantâneo das câmeras
+    // daquela zona. Aqui distribuímos esse total por câmera com pesos
+    // fixos (estáveis), mantendo coerência com o pico total.
+    // ============================================================
+
+    const ZONE_CAM_WEIGHTS = {
+      // Ajuste fino das zonas mais importantes (próximas ao palco)
+      Z01: { "1":0.34, "50":0.22, "51":0.22, "52":0.22 },
+      Z02: { "44":0.17, "46":0.17, "47":0.17, "48":0.16, "49":0.16, "17-PTZ":0.17 },
+      Z03: { "42":0.55, "43":0.45 },
+      Z07: { "39":0.52, "40":0.48 },
+      Z09: { "35":0.34, "37":0.33, "38":0.33 },
+      Z11: { "33":0.50, "34":0.50 },
+      Z13: { "23":0.34, "24":0.33, "36":0.33 },
+      Z15: { "2-PTZ":0.22, "26":0.16, "27":0.16, "29":0.16, "30":0.15, "54":0.15 }
+    };
+
+    function isSalturCamKey(raw){
+      const s = String(raw || "").trim();
+      if(!s) return false;
+      if(s.includes("SSP") || s.includes("(")) return false;
+      return true;
+    }
+
+    function getZoneCamWeights(zid, cams){
+      const manual = ZONE_CAM_WEIGHTS[zid] || null;
+      const ws = cams.map(c => {
+        const k = String(c);
+        if(manual && manual[k] != null) return Number(manual[k]);
+        return 1;
+      });
+      const sum = ws.reduce((a,b)=>a+b,0) || 1;
+      return ws.map(w => w / sum);
+    }
+
+    function buildCameraSeriesFromZones(zoneSeries){
+      const map = {};
+      // cria slots por câmera (usamos o ID completo "SALTUR_<raw>")
+      for(const [zid, cams0] of Object.entries(ZONE_CAMERAS)){
+        const cams = (cams0 || []).filter(isSalturCamKey).map(c=>String(c).trim());
+        for(const raw of cams){
+          const cid = `SALTUR_${raw}`;
+          if(!map[cid]) map[cid] = { id: cid, raw, zones: new Set(), series: [], byT: {} };
+          map[cid].zones.add(zid);
+        }
+      }
+
+      for(const row of zoneSeries){
+        for(const [zid, cams0] of Object.entries(ZONE_CAMERAS)){
+          const cams = (cams0 || []).filter(isSalturCamKey).map(c=>String(c).trim());
+          if(!cams.length) continue;
+
+          const zval = Number(row?.[zid] || 0);
+          const w = getZoneCamWeights(zid, cams);
+
+          let acc = 0;
+          for(let i=0;i<cams.length;i++){
+            const cid = `SALTUR_${cams[i]}`;
+            let v = (i === cams.length-1) ? (zval - acc) : Math.round(zval * w[i]);
+            if(v < 0) v = 0;
+            acc += v;
+
+            map[cid].series.push({ t: row.t, v });
+          }
+        }
+      }
+
+      for(const c of Object.values(map)){
+        for(const p of c.series) c.byT[p.t] = p.v;
+
+        const vals = c.series.map(p=>p.v);
+        c.peakNight = vals.length ? Math.max(...vals) : 0;
+        c.avgSimult = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+        c.zonesLabel = Array.from(c.zones).join(", ");
+      }
+      return map;
+    }
+
+    const CAM_SERIES_MAP = buildCameraSeriesFromZones(ACTIVE_ZONE_SERIES);
+
+    function camValueAtSlot(camId, slot){
+      const c = CAM_SERIES_MAP[camId];
+      if(!c) return 0;
+      return Number(c.byT?.[slot] || 0);
+    }
+
+    function getCamHistoryFor(camId){
+      const c = CAM_SERIES_MAP[camId];
+      if(!c) return { label: camId, rows: [], valueLabel: "Pessoas (estimado)", note: "Sem série disponível para esta câmera." };
+      return {
+        label: `Câmera ${c.raw}${c.zonesLabel ? " · " + c.zonesLabel : ""}`,
+        rows: c.series.map(p=>({ t:p.t, v:p.v })),
+        valueLabel: "Pessoas (estimado)"
+      };
+    }
+
+// Período solicitado (placeholders): 12/05/2025 até 31/05/2025
     const ZONE_PERIOD_START = new Date(2025, 4, 12); // 12/05/2025
     const ZONE_PERIOD_END   = new Date(2025, 4, 31); // 31/05/2025
 
@@ -2711,9 +2915,9 @@ async function pullBackend() {
     }
 
     // Cor do mapa (frio -> quente)
-    const HEAT_T1 = 12000;   // início de atenção
-    const HEAT_T2 = 22000;   // alto
-    const HEAT_T3 = 35000;   // crítico
+    const HEAT_T1 = 9000;    // início de atenção
+    const HEAT_T2 = 25000;   // alto
+    const HEAT_T3 = 60000;   // crítico
 
     function heatColor(v){
       if (v >= HEAT_T3) return "rgba(110, 0, 20, 0.70)";   // vinho (mais “vinho” mesmo)
@@ -2736,21 +2940,21 @@ async function pullBackend() {
     // Exemplos válidos de cor: "vermelho", "laranja", "vinho", "azul", "#ff0066", "rgba(255,0,0,0.6)"
     const MANUAL_ZONE_COLORS = {
       "Z01": "vinho",
-      "Z02": "laranja",
-      "Z03": "laranja",
-      "Z04": "laranja", 
-      "Z05": "laranja",
+      "Z02": "vinho",
+      "Z03": "vinho",
+      "Z04": "vinho", 
+      "Z05": "vinho",
       "Z06": "vinho",
       "Z18": "azul",
-      "Z07": "azul",
-      "Z09": "azul",
-      "Z08": "azul",
-      "Z10": "azul",
-      "Z11": "azul",
+      "Z07": "vinho",
+      "Z09": "vinho",
+      "Z08": "vinho",
+      "Z10": "vermelho",
+      "Z11": "vermelho",
       "Z12": "azul",
       "Z13": "azul",
       "Z14": "azul",
-      "Z15": "azul",
+      "Z15": "vinho",
       "Z16": "azul",
       "Z18": "vinho",
       "Z19": "vermelho",
@@ -2849,19 +3053,36 @@ async function pullBackend() {
 
     function getManualRow27(){
       const slot = MANUAL_HEATMAP_SLOT || floorToHalfHourHHMM(new Date());
+
+      // se existe exatamente, retorna direto
       if (MANUAL_ZONE_MAP_27[slot]) return MANUAL_ZONE_MAP_27[slot];
 
-      // clamp fora da janela do evento
-      if (slot < "18:00") return MANUAL_ZONE_MAP_27["18:00"];
-      return MANUAL_ZONE_MAP_27["05:00"];
+      // clamp correto usando minutos do evento (pós-meia-noite entra como +24h)
+      const t = timeToEventMinutes(slot);
+      const tStart = timeToEventMinutes("18:00");
+      const tEnd = timeToEventMinutes("05:00");
+
+      if (t < tStart) return MANUAL_ZONE_MAP_27["18:00"];
+      if (t > tEnd) return MANUAL_ZONE_MAP_27["05:00"];
+
+      // fallback: pega o mais próximo (seguro)
+      let bestKey = "18:00";
+      let bestDiff = Infinity;
+      for (const k of Object.keys(MANUAL_ZONE_MAP_27)) {
+        const d = Math.abs(timeToEventMinutes(k) - t);
+        if (d < bestDiff) { bestDiff = d; bestKey = k; }
+      }
+      return MANUAL_ZONE_MAP_27[bestKey];
     }
+
 
     function updateZoneHeatValues(){
       const row = getManualRow27();
       for (const zid of Object.keys(ZONE_CAMERAS)){
-        heatValues[zid] = clamp(Math.round(row?.[zid] || 0), 0, 65000);
+        heatValues[zid] = clamp(Math.round(row?.[zid] || 0), 0, 100000);
       }
     }
+
 
     function applySelectedZoneStyles(zid){
       // SVG
@@ -2959,6 +3180,10 @@ async function pullBackend() {
 
 
     function openZoneModal(zid){
+      if (FORCE_MANUAL_HEATMAP) {
+        updateZoneHeatValues();
+        updateHeatmap();
+      }
       const meta = ZONE_META[zid] || { title:zid, desc:"" };
       window.__dashState.selectedZone = zid;
 
@@ -2973,16 +3198,18 @@ async function pullBackend() {
       const labels = series.map(p=>p.hhmm);
       const totals = series.map(p=>p.value);
 
-      const totalPeriod = totals.reduce((a,b)=>a+b,0);
-      const avgSlot = Math.round(totalPeriod / (totals.length || 1));
+      // "totals" = pessoas simultâneas por slot (30 min)
+      // Somar isso NÃO dá "pessoas"; dá pessoa-slot. Para operação, use média e pico.
+      const sumSlots = totals.reduce((a,b)=>a+b,0);
+      const avgSimult = Math.round(sumSlots / (totals.length || 1));
 
       let peak = -1, peakIdx = 0;
       totals.forEach((v,i)=>{ if(v>peak){ peak=v; peakIdx=i; } });
 
-      // KPIs
-      document.getElementById("zoneKpiTotal").textContent = totalPeriod.toLocaleString("pt-BR");
-      document.getElementById("zoneKpiAvg").textContent = avgSlot.toLocaleString("pt-BR");
-      document.getElementById("zoneKpiPeak").textContent = peak.toLocaleString("pt-BR");
+      // KPIs (coerentes com densidade/presença)
+      document.getElementById("zoneKpiTotal").textContent = avgSimult.toLocaleString("pt-BR");
+      document.getElementById("zoneKpiAvg").textContent   = avgSimult.toLocaleString("pt-BR"); // (se quiser diferenciar depois por "dias", aqui vira avg diária)
+      document.getElementById("zoneKpiPeak").textContent  = peak.toLocaleString("pt-BR");
       document.getElementById("zoneKpiPeakSub").textContent = `${EVENT_LABEL} · ${labels[peakIdx]} (${EVENT_WINDOW_LABEL})`;
 
       // Status (mantém regra especial Z08; demais usa thresholds do heatmap)
@@ -2997,10 +3224,10 @@ async function pullBackend() {
       }
       document.getElementById("zoneKpiStatus").textContent = status;
 
-      // Blocos do evento (para o gráfico “Por período”)
-      const blockSums = ZONE_BLOCKS.map(b =>
-        series.filter(p=>inBlock(p.hhmm, b)).reduce((a,p)=>a+p.value,0)
-      );
+      const blockPeaks = ZONE_BLOCKS.map(b => {
+        const arr = series.filter(p=>inBlock(p.hhmm, b)).map(p=>p.value);
+        return arr.length ? Math.max(...arr) : 0;
+      });
 
       // Charts
       ensureZoneModalCharts();
@@ -3011,7 +3238,7 @@ async function pullBackend() {
       }
       if(charts.zonePeriods){
         charts.zonePeriods.data.labels = ZONE_BLOCKS.map(b=>b.label);
-        charts.zonePeriods.data.datasets[0].data = blockSums;
+        charts.zonePeriods.data.datasets[0].data = blockPeaks;
         charts.zonePeriods.update("none");
       }
 
@@ -3079,11 +3306,13 @@ function initCharts(){
     }
 
     function updateSpark(chart, next){
+      if(!chart) return; // se não existe, ignora
       const d = chart.data.datasets[0].data;
-      d.push(next);
       d.shift();
+      d.push(next);
       chart.update("none");
     }
+
 
     function updateBarData(chart, labels, data){
       chart.data.labels = labels;
@@ -3124,58 +3353,52 @@ function initCharts(){
       updateZoneHeatValues();
       updateHeatmap();
 
-      // KPI drift
-      const drift = () => (Math.random()<.5?-1:1) * rand(200, 1400);
-      state.kpis.now = clamp(state.kpis.now + drift(), 85000, 220000);
-      state.kpis.peakNight = Math.max(state.kpis.peakNight, state.kpis.now + rand(6000, 22000));
-      state.kpis.total = state.kpis.total + rand(3500, 12000);
-      state.kpis.alertsActive = clamp(state.kpis.alertsActive + (Math.random()<.25?(Math.random()<.5?-1:1):0), 0, 7);
+      // ============================================================
+      // MODO FINAL (manual) — KPIs + câmeras coerentes com o mapa
+      // - "now" segue o TOTAL_PRESENTE do slot atual (meia em meia hora)
+      // - SALTUR por câmera é derivado das zonas (engenharia reversa)
+      // - Top Câmeras é recalculado por "now"
+      // ============================================================
+
+      const row = getManualRow27(); // já respeita o slot forçado (MANUAL_HEATMAP_SLOT)
+      const slot = row?.t || (MANUAL_HEATMAP_SLOT || floorToHalfHourHHMM(new Date()));
+
+      state.kpis.now = Number(row?.TOTAL_PRESENTE || 0);
+      state.kpis.peakNight = TARGET_PEAK_TOTAL_PRESENTE;
+
+      // Mantém o "total acumulado" se você já estiver alimentando por XLS/back; senão, mantém o valor atual.
+      state.kpis.total = Number(state.kpis.total || 0);
+
+      // Alertas permanecem como estão (se quiser, você pode alimentar manualmente)
+      state.kpis.alertsActive = Number(state.kpis.alertsActive || 0);
       state.kpis.status = (state.kpis.alertsActive >= 1) ? "ATENÇÃO" : "OK";
 
-      // Smart indicators drift
-      state.smart.pressureZone = pick(state.zones);
-      const zcam = rand(1,40);
-      state.smart.zeroCam = `Câmera ${zcam}`;
-      state.smart.accel3m = clamp(state.smart.accel3m + (Math.random()<.5?-1:1)*rand(2,8), 8, 85);
-      state.smart.dropAfterPeak = clamp(state.smart.dropAfterPeak + (Math.random()<.5?-1:1)*rand(2,9), 10, 85);
-
-      // Update top cams quick drift
-      state.topCams15 = state.topCams15.map(r=>({
-        ...r,
-        in: clamp(r.in + rand(-5, 18), 0, 220),
-        out: clamp(r.out + rand(-3, 10), 0, 120),
-        alerts: clamp(r.alerts + (Math.random()<.2?(Math.random()<.5?-1:1):0), 0, 6)
-      })).sort((a,b)=>b.in-a.in).slice(0,4);
-
-      // alerts slight changes
-      if(Math.random()<.35){
-        const candidates = [
-          { msg:`Aceleração incomum em ${pick(state.zones)} (+${rand(25,65)}% em 10 min).`, meta:`${pick(["cam_Elevador_1","cam_Pelourinho_2","cam_Mercado_3","cam_Orla_4"])} · ${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}`, level:"WARN" },
-          { msg:`Inconsistência OUT/IN abaixo do histórico (possível subcontagem de saída).`, meta:`${pick(state.zones)} · ${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}`, level:"BAD" },
-          { msg:`Câmera com variação zero por > 2 min (verificar stream).`, meta:`Câmera ${rand(1,40)} · ${d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}`, level:"WARN" }
-        ];
-        const add = pick(candidates);
-        // keep last 5
-        state.alerts = [add, ...state.alerts].slice(0,5);
-      }
-
-      // Cameras drift
+      // Atualiza câmeras SALTUR pelo slot atual (coerente com as zonas)
       state.camsSaltur = state.camsSaltur.map(c=>{
-        const online = (c.status==="ON");
-        const step = online ? rand(-20, 55) : rand(-5, 6);
-        const nowVal = clamp(c.now + step, 0, 850);
+        const nowVal = camValueAtSlot(c.id, slot);
+        const peak = Number(CAM_SERIES_MAP[c.id]?.peakNight || nowVal);
         return {
           ...c,
           now: nowVal,
-          peakNight: Math.max(c.peakNight, nowVal + rand(0, 120)),
-          peakAll: Math.max(c.peakAll, nowVal + rand(100, 260)),
-          alerts: clamp(c.alerts + (Math.random()<.10 ? (Math.random()<.5?-1:1) : 0), 0, 7)
+          peakNight: peak,
+          peakAll: Math.round(peak * 1.12),
+          alerts: Number(c.alerts || 0)
         };
       });
 
+      // Top Câmeras (card) — as maiores "now"
+      state.topCams15 = [...state.camsSaltur]
+        .sort((a,b)=>b.now - a.now)
+        .slice(0,4)
+        .map(c=>({
+          cam: c.name,
+          local: (CAM_SERIES_MAP[c.id]?.zonesLabel ? `Zonas ${CAM_SERIES_MAP[c.id].zonesLabel}` : ""),
+          in: c.now,
+          out: 0,
+          alerts: Number(c.alerts || 0)
+        }));
 
-
-      // Bands drift (simulate changes)
+// Bands drift (simulate changes)
       state.allBands = state.allBands.map(b=>{
         const delta = rand(-1800, 4200);
         return { ...b, value: Math.max(10000, b.value + delta) };
@@ -3418,10 +3641,18 @@ if(isSSP){
     }
   }
 } else {
-  if(histTitleEl) histTitleEl.textContent = "Histórico (mock — últimos 30 min)";
-  if(histBox) histBox.innerHTML = `<div class="hint">Este detalhe ainda está em mock. No backend, este bloco vira uma série real (SQL).</div>`;
+  const h = getCamHistoryFor(camId);
+  if(histTitleEl) histTitleEl.textContent = `Histórico completo — ${h.label}`;
+  if(histBox){
+    if(h.rows && h.rows.length){
+      renderHistoryTable(histBox, h.rows, h.valueLabel);
+      histLabels = h.rows.map(r=>r.t);
+      histData = h.rows.map(r=>r.v);
+    } else {
+      histBox.innerHTML = `<div class="hint">${h.note || "Sem histórico disponível para esta câmera."}</div>`;
+    }
+  }
 }
-
 openModal("modalCam");
 
         // chart
